@@ -1,6 +1,36 @@
 #include <stdio.h>
 #include <avr/io.h>
-#include "uart.h"
+
+
+/**
+ * Receives a single byte of data via UART.
+ *
+ * This function waits until data is available in the UART data register, and
+ * then returns the received byte.
+ *
+ * @return The received byte of data.
+ */
+int UART_receive(FILE * file) {
+    while (!(UCSR0A & (1 << RXC0)));  // Wait until data is available to read
+    return UDR0;  // Return the received data
+}
+
+
+/**
+ * Transmits a single byte of data via UART.
+ *
+ * This function waits until the UART data register is empty, and then transmits
+ * the given data byte through the UART.
+ *
+ * @param data The byte of data to be transmitted.
+ */
+int UART_transmit(char data, FILE * file) {
+    while (!(UCSR0A & (1 << UDRE0)));  // Wait for the data register to be empty
+    UDR0 = data;  // Load the data into the register for transmission
+	
+	return 0;
+}
+
 
 /**
  * Initializes the UART communication interface.
@@ -22,35 +52,6 @@ void UART_init(unsigned int ubrr)
 	fdevopen(UART_transmit, UART_receive);
 }
 
-
-/**
- * Transmits a single byte of data via UART.
- *
- * This function waits until the UART data register is empty, and then transmits
- * the given data byte through the UART.
- *
- * @param data The byte of data to be transmitted.
- */
-int UART_transmit(char data, FILE * file) {
-    while (!(UCSR0A & (1 << UDRE0)));  // Wait for the data register to be empty
-    UDR0 = data;  // Load the data into the register for transmission
-	
-	return 0;
-}
-
-
-/**
- * Receives a single byte of data via UART.
- *
- * This function waits until data is available in the UART data register, and
- * then returns the received byte.
- *
- * @return The received byte of data.
- */
-int UART_receive(FILE * file) {
-    while (!(UCSR0A & (1 << RXC0)));  // Wait until data is available to read
-    return UDR0;  // Return the received data
-}
 
 /**
  * Transmits a character via UART and handles newline characters.
