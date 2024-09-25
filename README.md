@@ -95,3 +95,12 @@ The addresses are reserved as such:
 Notice the three "standalone" bits in the binary addresses. Since they form a unique pattern for each component, we can connect the address pins on the ATmega162 to NAND gates to create an address decoder.
 
 The address decoder sends a signal to the components' "chip select" pins whenever we read or write to their addresses. This makes the component only listen to the Write / Read control strobe when the signal is meant for them.
+
+
+
+## Lab 3 - A/D converting and joystick inputs
+Our controller has a joystick consisting of two variable resistors (potmeter). To read their position a [MAX156 analog-to-digital-converter (ADC)](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX155-MAX156.pdf) is used. 
+
+The MAX156 converts input voltages into 8-bit numbers every time the write strobe signal is triggered from the ATmega162. Every time the read strobe is triggered after that, it outputs the next channel's converted voltage on its pins.
+
+NB! It takes some microseconds to convert each channel (9 x N x 2) / f<sub>CLK</sub>, so beware of that before reading.
