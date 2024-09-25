@@ -8,6 +8,7 @@
 #define F_CPU 4915200 // Set clock frequency to 4,9MHz
 #define BAUD 9600
 #define MY_UBBR F_CPU/16/BAUD - 1
+#define ADC_CONV_TIME 1000000*9*4*2/F_CPU // ADC Conversion time [microseconds]
 
 #include <inttypes.h> // Needed for uint8_t, uint16_t, etc.
 #include <avr/io.h>
@@ -24,14 +25,18 @@ int main(void) {
 	SRAM_init();
 	
 	while(1){
-		  mem_adc[0] = 0x04; // Skriver 0x04 til ADC, altså vi sier til ADC at vi skal hente ut info fra CH1
+		
+		  mem_adc[0] = 0; // Write anything to trigger the write strobe + chip select to the ADC.
 		  
-		  _delay_us(20);
+		  _delay_us(ADC_CONV_TIME); // Give the ADC time to convert
 
-		  uint8_t value = mem_adc[0]; // Read 8-bit value f
-		  printf("ADC: %02X\n\n", value);
+		  uint8_t adc_ch1 = mem_adc[0]; // Read first channel from ADC
+		  
+		  _delay_us(ADC_CONV_TIME)
 
-		  _delay_ms(500);
+		  uint8_t adc_ch2 = mem_adc[8] // Read second channel from ADC
+
+		  printf("ADC1: %02X    -    ADC2: %02X\n\n", adc_ch1, adc_ch2);
 	}
 	return 0;
 }
