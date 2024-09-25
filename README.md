@@ -1,28 +1,41 @@
 # Ping-Pong Machine
-Group 33's semester project for TTK4155 (Embedded and Industrial Computer Systems) at NTNU, Autumn 2024
+Group 33's semester project for TTK4155 (Embedded and Industrial Computer Systems) at NTNU, Autumn 2024.
 
-The project is divided in two main parts:
+The purpose of this project is to assemble and program a machine for a mechanical game of single-player pong. It consists of two main nodes:
 
-**Node 1**: A breadboard with an Atmel AVR Atmega162. Manages the user interface, e.g. reading joysticks inputs via ADC and displaying graphics on an OLED.
-**Node 2**: 
+**Node 1**: A breadboard with an [Atmel AVR ATmega162](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2513-8-bit-AVR-Microntroller-ATmega162_Datasheet.pdf). Manages the user interface, e.g. reading joysticks inputs via ADC and displaying graphics on an OLED.
+
+**Node 2**: An [Arduino Due](https://docs.arduino.cc/hardware/due) (based on [Atmel ATSAM3X8E](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-11057-32-bit-Cortex-M3-Microcontroller-SAM3X-SAM3A_Datasheet.pdf)) to control actuators & IO. Communicates with node 1 using CAN bus.
+
+This document is meant as an informal progress report where we jot down anything of note.
+
+[comment]: <![Welcome to byggern.](https://i.imgur.com/ccaTs94.mp4)> 
+<p style="font-family: Papyrus, Charcoal, fantasy; color:red">🗲 Byggern Begins 🗲</p>
+
 
 
 ## Lab 1 - Initial assembly of Atmega162 and RS-232
-- V<sub>a</sub> = 9V. Reduced to 5V by an LMN7805 voltage regulator.
-- Button with pull-up resistor connected to Atmega162 reset pin.
+
+Quick rundown:
+- V<sub>a</sub> = 9V. Reduced to 5V by an [LMN7805](https://www.sparkfun.com/datasheets/Components/LM7805.pdf) voltage regulator.
+- Button with [pull-up resistor](https://learn.sparkfun.com/tutorials/pull-up-resistors/all) connected to Atmega162 reset pin.
 - 4.9152MHz crystal oscillator connected to XTAL pins of Atmega162.
-- JTAG Interface for Atmel-ICE connected and tested using Microchip Studio.
+- JTAG Interface for [Atmel-ICE](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-ICE_UserGuide.pdf) connected and tested using Microchip Studio. Used for programming and debugging the ATmega162.
 
 At the start of main.c, the clock frequency, baud rate and other important parameters are defined.
+
 ```c
 #define F_CPU 4915200 // Set clock frequency to 4,9MHz
 #define BAUD 9600
-#define MY_UBBR F_CPU/16/BAUD - 1 // USART Band Rate Register
+#define MY_UBBR F_CPU/16/BAUD - 1 // USART Baud Rate Register for asynchronous normal mode
 ```
 
-A Max233 RS-232 ICU is used to establish 2-way UART communication to/from Atmega162. 
+A [Max233 RS-232 line driver](https://en.wikipedia.org/wiki/MAX232) helps the ATmega162 maintain the correct signal levels while sending/receiving data over UART.
 
-To be able to transmit data on the serial line using the printf function, the fdevopen function is run in the UART driver.
+To be able to transmit data on the serial line using the standard printf function, the fdevopen function is called in the UART driver. This makes the controller open a file-like stream that it writes to. We can then read the output using 
+
+The code below is modified from page 174 in the ATmega162 datasheet. Note that the channel number had to be added (e.g. UBRR**0**H instead of UBBRH).
+
 ```c
 void UART_init(unsigned int ubrr)
 {
@@ -38,3 +51,47 @@ void UART_init(unsigned int ubrr)
 	fdevopen(UART_transmit, UART_receive);
 }
 ```
+
+
+
+## Lab 2 - Address decoding and external RAM
+
+The ATmega162 has a built-in interface for external SRAM that can be activated by setting the SRE bit in the MCUCR register:
+
+```c
+void SRAM_init() {
+	MCUCR = (1 << SRE); // Enable external SRAM
+	SFIOR = (1 << XMM2); // Masks PC4-PC7 to make sure JTAG remains enabled
+}
+```
+
+Enabling this makes the ATmega162 do some cool tricks in the background whenever we read or write to addresses between 0x0500 and 0xFFFF in the code.
+
+The following pins get new functionality:
+
+| Pins		| Function 	|
+| ---		| ---		|
+| PA0-PA7	| Alternates between sending the first half of the 16-bit memory address, then eight data bits |
+| PC0-PC7 	| Sends the rest of the memory address |
+| PD6		| WR (Write control strobe) - Falling edge signals to other equipment that new data has been output |
+| PD7		| RD (Read control strobe) - Falling edge signals to other equipment that they should write something |
+| PE1		| ALE (Address latch enable) - Rising edge when writing address, falling edge when done |
+
+PE1 is connected to a [74ALS573](https://www.ti.com/lit/ds/symlink/sn74as573a.pdf?ts=1727201799450) latch circuit. This circuit "saves" the address bits from the ATmega162 while data is being read/written to the SRAM. This is needed because we don't have enough available pins to control everything at once from the ATmega162.
+
+The addresses are reserved as such:
+
+| Reserved for			| Address (Hex)	| Address (Binary)		|
+| ---					| ---			| ---					| 
+| OLED Commands Start	| 0x1000		| 0001 000 000000000	|
+| OLED Commands End		| 0x11FF		| 0001 000 111111111	|
+| OLED Data Start		| 0x1200		| 0001 001 000000000	|
+| OLED Data End			| 0x13FF		| 0001 001 111111111	|
+| ADC Start				| 0x1400		| 0001 010 000000000	|
+| ADC End				| 0x17FF		| 0001 011 111111111	|
+| SRAM Start			| 0x1800		| 0001 100 000000000	|
+| SRAM End				| 0x1FFF		| 0001 111 111111111	|
+
+Notice the three "standalone" bits in the binary addresses. Since they form a unique pattern for each component, we can connect the address pins on the ATmega162 to NAND gates to create an address decoder.
+
+The address decoder sends a signal to the components' "chip select" pins whenever we read or write to their addresses. This makes the component only listen to the Write / Read control strobe when the signal is meant for them.
