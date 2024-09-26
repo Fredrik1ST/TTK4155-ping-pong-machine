@@ -104,3 +104,7 @@ Our controller has a joystick consisting of two variable resistors (potmeter). T
 The MAX156 converts input voltages into 8-bit numbers every time the write strobe signal is triggered from the ATmega162. Every time the read strobe is triggered after that, it outputs the next channel's converted voltage on its pins.
 
 NB! It takes some microseconds to convert each channel (9 x N x 2) / f<sub>CLK</sub>, so beware of that before reading.
+
+The filter on the USB multifunction board has a Capacitance of 100nF and a resistance of 2kΩ, giving us a cutoff frequency of 795.7747 Hz
+
+The relationship between the joystick angle (θ) and voltage (V) is V(θ) = 2.5 + (1/12 * θ)
