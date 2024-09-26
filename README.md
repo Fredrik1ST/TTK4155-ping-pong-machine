@@ -108,3 +108,22 @@ NB! It takes some microseconds to convert each channel (9 x N x 2) / f<sub>CLK</
 The filter on the USB multifunction board has a Capacitance of 100nF and a resistance of 2kΩ, giving us a cutoff frequency of 795.7747 Hz
 
 The relationship between the joystick angle (θ) and voltage (V) is V(θ) = 2.5 + (1/12 * θ)
+
+
+## Lab 4 - OLED display and user interface
+
+Make sure the EXTSEL jumper is connected before starting to debug. Without the EXTSEL jumper, the monitor will not be controllable from outside the USB multifunction board.
+
+The USB multifunction board has a 124x64 dot matrix monitor. In this Lab we are connecting it and making it functional.
+
+We start by connecting the pins: Pin 1-3 are the Chip select, Data/Command and Write pins. They are connected to the Nand gate output, the 3rd adress bit on the white adress bus, and the write pin of the atmel AVR.
+
+The next 8 pins are the data pins, they are connected to our purple data bus. 
+
+The last pin is ground, which is not used.
+
+Reading from the display is not possible, due to the way the USB multifunction board has been constructed.
+
+Writing to the display shouldnt be more complicated than writing the data to half of the screen, getting a rising edge on write, then doing the same for the other half of the screen. This is due to the fact that we have only 512 bytes avaliable to store data to be sent, while the screen requires 912 bytes to write on the whole display.
+
+
