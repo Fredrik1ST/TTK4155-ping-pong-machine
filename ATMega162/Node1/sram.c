@@ -3,21 +3,22 @@
 #include <avr/io.h>
 #include <inttypes.h> // Needed for uint16_t
 
-/**
- * Initialize the external SRAM features of the AVR MCU.
- *
- * Also masks the PC4-PC7 bits so that they can still be used for JTAG communications.
- */
+
 void SRAM_init() {
 	MCUCR = (1 << SRE); // Enable SRAM
-	SFIOR = (1 << XMM2); // Masks PC4-PC7 to make sure JTAG remains enabled
+	SFIOR = (1 << XMM2); // Masks PC4-PC7 to make sure JTAG remains untouched
+	
+	// TEST: Add some wait states to address/data pins if ADC is unable to respond due to timing issues
+	//	SRW01	SRW00	Function
+	//	0		0		No wait states
+	//	0		1		Wait one cycle during read/write strobe
+	//	1		0		Wait two cycles during read/write strobe
+	//	1		1		Wait two cycles during read/write and wait one cycle before driving out new address
+	//EMCUCR |= (1<<SRW00);
+	//EMCUCR |= (1<<SRW01);
 }
 
-/**
- * Tests the external SRAM by reading and writing to preset registries.
- *
- * Remember to run the function SRAM_init() before this.
- */
+
 void SRAM_test(){
 	volatile char *ext_ram = (char *) 0x1800; // Start address for the SRAM
     uint16_t ext_ram_size = 0x800;
