@@ -27,13 +27,13 @@ int main(void) {
 		  
 		_delay_ms(1); // Give ADC time to convert
 
-		volatile uint8_t adc_ch0 = mem_adc[0]; // Read first channel from ADC
+		uint8_t adc_ch0 = mem_adc[0]; // Read first channel from ADC
 		
 		_delay_ms(1);
 
-		volatile uint8_t adc_ch1 = mem_adc[2]; // Read second channel from ADC
+		uint8_t adc_ch1 = mem_adc[1]; // Read second channel from ADC
 
-		printf("ADC0: %02X    -    ADC1: %02X\r\n\r\n", adc_ch0, adc_ch1);
+		//printf("ADC0: %02X    -    ADC1: %02X\r\n\r\n", adc_ch0, adc_ch1);
 		  
 		_delay_ms(100);
 
