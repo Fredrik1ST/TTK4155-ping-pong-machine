@@ -1,6 +1,11 @@
 #ifndef UART_H
 #define UART_H
 
+/*
+* @file uart.h
+* @brief Handling of UART communications with onboard components
+*/
+
 #include <stdio.h>
 
 

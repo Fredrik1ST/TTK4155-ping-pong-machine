@@ -2,7 +2,7 @@
 #include <util/delay.h>
 
 /**
- * Generates a square wave signal on PORTB0.
+ * @brief Generates a square wave signal on PORTB0.
  *
  * This function sets the PORTB0 pin as an output and continuously toggles it to
  * produce a square wave signal with a 500 ms delay between toggles (1Hz)

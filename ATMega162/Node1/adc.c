@@ -1,10 +1,8 @@
+#include "def.h"
+
 #include <util/delay.h>
 #include <inttypes.h> // Needed for uint16_t
 #include <avr/io.h>
-
-#define ADC_START_ADR 0x1400 // From 0x1400 to 0x17FF
-#define ADC_CHANNELS 4
-#define ADC_CONV_TIME 9*ADC_CHANNELS*2/F_CPU*1000000 // Conversion time [microseconds]
 
 
 void adc_init(){
@@ -28,16 +26,16 @@ volatile uint8_t adc_read(uint8_t channel){
 		uint8_t digitalVal = 0;
 		
 		// Write anything to the ADC to trigger a conversion
-		// This triggers the chip select and write control strobe when external memory is being used
-		volatile char* mem_adc = (char *) ADC_START_ADR;
+		// Triggers the chip select and write control strobe when external memory interface is active
+		volatile char* mem_adc = (char *) DEF_ADR_ADC;
 		mem_adc[0] = 0;
 
 		// Wait for conversion to finish
-		uint16_t convTime = ADC_CONV_TIME;
+		uint16_t convTime = DEF_ADC_CONV_TIME;
 		_delay_us(convTime);
 
 		// Read requested channel
-		if (channel <= ADC_CHANNELS){ // Returns 0 if channel number is invalid
+		if (channel <= DEF_ADC_CHANNELS){ // Returns 0 if channel number is invalid
 			for (int i = 0; i <= channel; ++i){
 				digitalVal = mem_adc[i];
 			}

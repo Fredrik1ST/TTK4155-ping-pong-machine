@@ -1,5 +1,10 @@
 #ifndef SRAM_H_
-#define SRAM_H_
+#define SRAM_H
+
+/*
+* @file sram.h
+* @brief Handling of external SRAM / memory interface (XMEM) for ATmega162
+*/
 
 
 /**

@@ -4,6 +4,8 @@
 
 adc.c
 
+gamepad.c
+
 main.c
 
 sram.c

@@ -1,6 +1,15 @@
+/**
+ * @file adc.h
+ * @brief Analog-to-digital converter
+ * 
+ * Reading from channel n is done by triggering the write control strobe, then pulsing the read control strobe n times.
+ * The control strobes are automatically triggered when reading/writing by the ATmega162 when the external memory interface (XMEM) is activated.
+ */
+
 #ifndef ADC_H
 #define ADC_H
 
+#include "def.h"
 
 /**
  * Initialize the Analog-Digital-Converter (ADC)

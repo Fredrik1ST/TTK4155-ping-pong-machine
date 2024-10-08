@@ -5,7 +5,7 @@
 
 
 void SRAM_init() {
-	MCUCR = (1 << SRE); // Enable SRAM
+	MCUCR |= (1 << SRE); // Enable SRAM
 	SFIOR = (1 << XMM2); // Masks PC4-PC7 to make sure JTAG remains untouched
 	
 	// TEST: Add some wait states to address/data pins if ADC is unable to respond due to timing issues
@@ -14,8 +14,8 @@ void SRAM_init() {
 	//	0		1		Wait one cycle during read/write strobe
 	//	1		0		Wait two cycles during read/write strobe
 	//	1		1		Wait two cycles during read/write and wait one cycle before driving out new address
-	//EMCUCR |= (1<<SRW00);
-	//EMCUCR |= (1<<SRW01);
+	//MCUCR |= (1<<SRW10);
+	//EMCUCR |= (1<<SRW11);
 }
 
 
