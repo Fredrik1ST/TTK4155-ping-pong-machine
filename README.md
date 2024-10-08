@@ -94,6 +94,8 @@ The addresses are reserved as such:
 
 Notice the three "standalone" bits in the binary addresses. Since they form a unique pattern for each component, we can connect the address pins on the ATmega162 to NAND gates to create an address decoder.
 
+![Address decoder from NAND gates|100](img/NAND%20GATES.png)
+
 The address decoder sends a signal to the components' "chip select" pins whenever we read or write to their addresses. This makes the component only listen to the Write / Read control strobe when the signal is meant for them.
 
 
