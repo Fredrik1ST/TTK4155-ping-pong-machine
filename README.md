@@ -94,7 +94,7 @@ The addresses are reserved as such:
 
 Notice the three "standalone" bits in the binary addresses. Since they form a unique pattern for each component, we can connect the address pins on the ATmega162 to NAND gates to create an address decoder.
 
-![alt](img/NAND%20GATES.png){: width="60%"}
+<img src="img/NAND%20GATES.png" width="600">
 
 The address decoder sends a signal to the components' "chip select" pins whenever we read or write to their addresses. This makes the component only listen to the Write / Read control strobe when the signal is meant for them.
 
@@ -111,6 +111,7 @@ Notes:
 - The filter on the USB multifunction board has a Capacitance of 100nF and a resistance of 2kΩ, giving us a cutoff frequency of 795.7747 Hz
 - The relationship between the joystick angle (θ) and voltage (V) is V(θ) = 2.5 + (1/12 * θ)
 - **Weird behavior from address pin PC02 as long as compiler optimization was enabled in Microchip Studio**
+
 
 
 ## Lab 4 - OLED display and user interface
