@@ -1,6 +1,6 @@
 /*
-* @file joystick.h
-* @brief Potentiometer-based joystick read via ADC
+* @file gamepad.h
+* @brief Gamepad with joystick, sliders and button inputs
 */
 
 #ifndef GAMEPAD_H
