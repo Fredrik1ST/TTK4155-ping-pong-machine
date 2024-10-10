@@ -72,7 +72,7 @@ void oled_reset();
 * @param	c		The char to be printed
 * @param	font	Font number to use
 */
-void oled_printChar(const char* c, char font);
+void oled_printChar(char c, char font);
 
 
 /*

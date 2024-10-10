@@ -6,7 +6,6 @@
 #include "sram.h"
 #include "adc.h"
 #include "gamepad.h"
-#include "myDelay.h" // Homemade delays
 #include "oled.h"
 
 #include <util/delay.h>
@@ -24,16 +23,12 @@ int main(void) {
 	adc_init();
 	gamepad_init();
 	oled_init();
+	oled_reset();
 	
 	while(1){
+		oled_print("Test :( ", 5);
+		_delay_ms(500);
 		oled_reset();
-		oled_pos(0x0, 0x0);
-		for (char i = 0; i<128; i++){
-			if (i%4 == 0){
-				oled_write_data(0x1);
-			}else{
-				oled_pos{0x0, i};
-			}
 	}
 	return 0;
 }

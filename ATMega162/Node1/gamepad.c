@@ -71,6 +71,7 @@ Gamepad refresh_gamepad(){
 	Gamepad gp = read_gamepad();
 	gp = calibrate_gamepad(gp);
 	gp.joy_dir = getJoystickDir(gp);
+	return gp;
 }
 
 void print_gamepad(Gamepad gp){

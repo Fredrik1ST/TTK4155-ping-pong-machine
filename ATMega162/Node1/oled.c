@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "fonts.h"
 #include "def.h"
 
@@ -59,7 +61,8 @@ void oled_goto_col(uint8_t col)
 	oled_write_cmd(lower_adr);
 
 	// Upper 4 bits (mask last 4 bits)
-	uint8_t upper_adr = 0x1F & ((col & 0xF0)>>4);
+	//uint8_t upper_adr = 0x1F & ((col & 0xF0)>>4);
+	uint8_t upper_adr = 0x10 | ((col & 0xF0)>>4);
 	oled_write_cmd(upper_adr);
 }
 
@@ -70,6 +73,9 @@ void oled_pos(uint8_t page, uint8_t col)
 	oled_goto_col(col);
 }
 
+void oled_home(){
+	oled_pos(0x0,0x0);
+}
 
 void oled_write_line(uint8_t page){
 	oled_goto_page(page);
@@ -91,31 +97,35 @@ void oled_reset(){
 	for (uint8_t i=0; i < 8; i++){
 		oled_clear_line(i);
 	}
+	oled_home();
 }
 
 
-void oled_printChar(const char* c, char font){
-	switch (font){
-		case 4: // 4x8 SMALL
-			for (uint8_t i = 0; i < 4; i++)
-			{
-				oled_write_data(pgm_read_byte(&font4[c-32][i])); // Function & font from fonts.h
-			}
-			break;
+void oled_printChar(char c, char font){
+	printf("%c = %d\r\n", c, c);
+	if (c >= 0x20 && c <= 0x7F){ // Do not attempt to write if ASCII character does not exist
+		switch (font){
+			case 4: // 4x8 SMALL
+				for (uint8_t i = 0; i < 4; i++)
+				{
+					oled_write_data(pgm_read_byte(&font4[c-32][i])); // Function & font from fonts.h
+				}
+				break;
 			
-		case 8: // 8x8 LARGE
-			for (uint8_t i = 0; i < 8; i++)
-			{
-				oled_write_data(pgm_read_byte(&font8[c-32][i]));
-			}
-			break;
+			case 8: // 8x8 LARGE
+				for (uint8_t i = 0; i < 8; i++)
+				{
+					oled_write_data(pgm_read_byte(&font8[c-32][i]));
+				}
+				break;
 		
-		default: // 5x8 NORMAL
-			for (uint8_t i = 0; i < 5; i++)
-			{
-				oled_write_data(pgm_read_byte(&font5[c-32][i]));
-			}
-			break;
+			default: // 5x8 NORMAL
+				for (uint8_t i = 0; i < 5; i++)
+				{
+					oled_write_data(pgm_read_byte(&font5[c-32][i]));
+				}
+				break;
+		}
 	}
 }
 
