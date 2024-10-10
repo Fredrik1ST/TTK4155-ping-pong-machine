@@ -6,12 +6,14 @@
 #include <avr/io.h>
 #include <inttypes.h> // Needed for uint8_t, uint16_t, etc.
 #include <math.h>
+#include <stdio.h>
 #include "adc.h"
 #include "gamepad.h"
 
 
 void gamepad_init(){
-	DDRB &= ~(1 << DDB0); // Set PB1 to 0 (input for joystick button)
+	PORTB |= (1 << PB2); // Set pullup resistor for input
+	DDRB &= ~(0 << DDB2); // Set PB2 to 0 (input for joystick button)
 }
 
 Gamepad read_gamepad(){
@@ -20,23 +22,28 @@ Gamepad read_gamepad(){
 	gp.pos_y = (int16_t)adc_read(CH_JOYSTICK_Y);
 	gp.pos_left = (int16_t)adc_read(CH_SLIDER_LEFT);
 	gp.pos_right = (int16_t)adc_read(CH_SLIDER_RIGHT);
-	gp.btn = (PINB & (1<<PB0));
+	gp.btn = (PINB & (1<<PB2));
+	
+	// printf("RAW X: %d    -    Y: %d    -    L: %d    -    R: %d\r\n\r\n", gp.pos_x, gp.pos_y, gp.pos_left, gp.pos_right);
 
 	return gp;
 }
 
 Gamepad calibrate_gamepad(Gamepad input){
 	Gamepad gp;
-	gp.pos_x = (input.pos_x - 127)*(100/127); // Get direction as a percentage between -100 to +100
-	gp.pos_y = (input.pos_y - 127)*(100/127);
-	gp.pos_left = (input.pos_left - 127)*(100/127);
-	gp.pos_right = (input.pos_right - 127)*(100/127);
+	
+	gp.pos_x = (input.pos_x - 127) * 100 / 127; // Get direction as a percentage between -100 to +100
+	gp.pos_y = (input.pos_y - 127) * 100 / 127;
+	gp.pos_left = (input.pos_left - 127) * 100 / 127;
+	gp.pos_right = (input.pos_right - 127) * 100 / 127;
+	
+	// printf("CAL X: %d    -    Y: %d    -    L: %d    -    R: %d\r\n\r\n", gp.pos_x, gp.pos_y, gp.pos_left, gp.pos_right);
 	
 	return gp;
 }
 
 Dir getJoystickDir(Gamepad gp){
-	int16_t deadzone = 10;
+	int16_t deadzone = 40;
 	Dir direction = NONE; // Default
 
 	if (gp.pos_x < deadzone && gp.pos_x > -deadzone && gp.pos_y < deadzone && gp.pos_y > -deadzone){
@@ -60,25 +67,29 @@ Dir getJoystickDir(Gamepad gp){
 	return direction;
 }
 
-Gamepad refresh_gamepad(Gamepad gp){
-	gp = read_gamepad();
+Gamepad refresh_gamepad(){
+	Gamepad gp = read_gamepad();
 	gp = calibrate_gamepad(gp);
 	gp.joy_dir = getJoystickDir(gp);
 }
 
 void print_gamepad(Gamepad gp){
 	// Print analog values
-	printf("X: %02X    -    Y: %02X    -    L: %02X    -    R: %02X\r\n\r\ ", gp.pos_x, gp.pos_y, gp.pos_left, gp.pos_right);
-
+	//printf("X: %02X    -    Y: %02X    -    L: %02X    -    R: %02X\r\n\r\n", gp.pos_x, gp.pos_y, gp.pos_left, gp.pos_right);
+	
 	switch(getJoystickDir(gp)){
-		case LEFT: printf("Joystick: LEFT");
-		case RIGHT: printf("Joystick: RIGHT");
-		case UP: printf("Joystick: UP");
-		case DOWN: printf("Joystick: DOWN");
-		default: printf("Joystick: NEUTRAL");
+		case LEFT: printf("Joystick: LEFT");break;
+		case RIGHT: printf("Joystick: RIGHT");break;
+		case UP: printf("Joystick: UP");break;
+		case DOWN: printf("Joystick: DOWN");break;
+		default: printf("Joystick: NEUTRAL");break;
 	}
 	
 	if (gp.btn){
-		printf("Button pressed")
+		printf("    -    Button pressed    -    ");
+	}else{
+		printf("    -    ");
 	}
+		
+	printf("X: %d    -    Y: %d    -    L: %d    -    R: %d\r\n", gp.pos_x, gp.pos_y, gp.pos_left, gp.pos_right);
 }
