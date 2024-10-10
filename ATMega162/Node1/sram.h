@@ -1,11 +1,10 @@
-#ifndef SRAM_H_
-#define SRAM_H
-
 /*
 * @file sram.h
 * @brief Handling of external SRAM / memory interface (XMEM) for ATmega162
 */
 
+#ifndef SRAM_H
+#define SRAM_H
 
 /**
  * Initialize the external SRAM features of the AVR MCU.

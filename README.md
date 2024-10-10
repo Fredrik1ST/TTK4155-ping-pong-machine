@@ -94,22 +94,24 @@ The addresses are reserved as such:
 
 Notice the three "standalone" bits in the binary addresses. Since they form a unique pattern for each component, we can connect the address pins on the ATmega162 to NAND gates to create an address decoder.
 
-![Address decoder from NAND gates|100](img/NAND%20GATES.png)
+<img src="img/NAND%20GATES.png" width="600">
 
 The address decoder sends a signal to the components' "chip select" pins whenever we read or write to their addresses. This makes the component only listen to the Write / Read control strobe when the signal is meant for them.
 
 
 
 ## Lab 3 - A/D converting and joystick inputs
-Our controller has a joystick consisting of two variable resistors (potmeter). To read their position a [MAX156 analog-to-digital-converter (ADC)](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX155-MAX156.pdf) is used. 
+Our gamepad has a joystick consisting of two variable resistors (potmeter), two sliders and some buttons. To read their position a [MAX156 analog-to-digital-converter (ADC)](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX155-MAX156.pdf) is used. 
 
 The MAX156 converts input voltages into 8-bit numbers every time the write strobe signal is triggered from the ATmega162. Every time the read strobe is triggered after that, it outputs the next channel's converted voltage on its pins.
 
 NB! It takes some microseconds to convert each channel (9 x N x 2) / f<sub>CLK</sub>, so beware of that before reading.
 
-The filter on the USB multifunction board has a Capacitance of 100nF and a resistance of 2kΩ, giving us a cutoff frequency of 795.7747 Hz
+Notes:
+- The filter on the USB multifunction board has a Capacitance of 100nF and a resistance of 2kΩ, giving us a cutoff frequency of 795.7747 Hz
+- The relationship between the joystick angle (θ) and voltage (V) is V(θ) = 2.5 + (1/12 * θ)
+- **Weird behavior from address pin PC02 as long as compiler optimization was enabled in Microchip Studio**
 
-The relationship between the joystick angle (θ) and voltage (V) is V(θ) = 2.5 + (1/12 * θ)
 
 
 ## Lab 4 - OLED display and user interface
@@ -127,5 +129,3 @@ The last pin is ground, which is not used.
 Reading from the display is not possible, due to the way the USB multifunction board has been constructed.
 
 Writing to the display shouldnt be more complicated than writing the data to half of the screen, getting a rising edge on write, then doing the same for the other half of the screen. This is due to the fact that we have only 512 bytes avaliable to store data to be sent, while the screen requires 912 bytes to write on the whole display.
-
-
