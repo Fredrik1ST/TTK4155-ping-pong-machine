@@ -7,40 +7,22 @@
 #define MENU_H
 
 #include <inttypes.h>
+#include <stdbool.h>
+#include <string.h>
+
+#include <stdio.h>
 
 /**
  * Defines menu structure as a tree with a parent, sub menu and display text
  */
 struct Page{
-	int8_t* parentMenu;
-	int8_t* subMenu[10];
+	struct Page* parentMenu;
+	struct Page* subMenu[10];
+	int8_t totalSubMenu;
 	char name[25]; // Display text
-	void run*;
+	void (*run)(void);  // run when menu is selected
+
 };
-
-struct Menu{
-	struct Page* currentPage;
-	
-	// main menu
-	struct Page mainMenu;
-	mainMenu.name = "Main Menu";
-	currentPage = &mainMenu;
-
-	// sub menu 1
-	struct Page subMenu1;
-	subMenu1.name = "Sub menu 1";
-	subMenu1.run = menu_func0;
-	mainMenu.subMenu[0] = &subMenu1;
-	
-	// sub menu 2 
-	struct Page subMenu2;
-	subMenu2.name = "Sub menu 2";
-	subMenu2.run = menu_func1;
-	mainMenu.subMenu[1] = &subMenu2;	
-	
-	int8_t cursor = 0; // selected page
-	
-} theMenu;
 
 
 /**
@@ -58,20 +40,46 @@ void menu_selectPage();
 
 
 /**
- * Move cursor
+ * Move cursor to a specific index
  */
-bool menu_moveCursor(int8_t index);
+bool menu_setCursor(int8_t index);
+
+
+/**
+ * Move cursor
+ * @param typically -1 or 1 for up and down
+ */
+bool menu_moveCursor(int8_t direction);
+
 
 /**
  * Test page function for page0 and page1
  */
-void menu_func0(){
-	printf("0")
-}
+void menu_func0();
 
-void menu_func1(){
-	printf("1")
-}
+void menu_func1();
+
+
+/**  
+ *	Stores all menus 
+ */
+struct struct_Menu{
+	struct Page* currentPage;
+	
+	struct Page root;
+	struct Page subMenu1;
+	struct Page subMenu2;
+
+	int8_t cursor; // selected page
+	
+	
+} menu;
+
+
+void menu_init();
+
+void menu_print();
+
 
 
 #endif /* MENU_H */

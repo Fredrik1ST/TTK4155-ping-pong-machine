@@ -7,6 +7,7 @@
 #include "adc.h"
 #include "gamepad.h"
 #include "oled.h"
+#include "menu.h"
 
 #include <util/delay.h>
 #include <inttypes.h> // Needed for uint8_t, uint16_t, etc.
@@ -24,11 +25,35 @@ int main(void) {
 	gamepad_init();
 	oled_init();
 	oled_reset();
+	menu_init();
+	
+	Gamepad gp;
+	Dir new_gp_dir;
+	Dir prev_gp_dir;
 	
 	while(1){
-		oled_print("Test :( ", 5);
-		_delay_ms(500);
+		//oled_print("Test :) ", 5);
+		menu_print();
+		_delay_ms(100);
 		oled_reset();
+		
+		// get gamepad position and update menu
+		gp = read_gamepad();
+		gp = calibrate_gamepad(gp);
+		new_gp_dir = getJoystickDir(gp);
+		if (new_gp_dir == UP && prev_gp_dir != UP ){
+			menu_moveCursor(-1);
+		}
+		else if (new_gp_dir == DOWN && prev_gp_dir != DOWN ){
+			menu_moveCursor(1);
+		}
+		if(gp.btn){
+			menu_selectPage();
+		}
+		prev_gp_dir = new_gp_dir;
+
+		//printf("Value: %i\n", gp.btn);
+
 	}
 	return 0;
 }
