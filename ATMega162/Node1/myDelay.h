@@ -3,8 +3,8 @@
 * @brief delay_us and delay_ms
 */
 
-#ifndef DELAY_H_
-#define DELAY_H_
+#ifndef MYDELAY_H
+#define MYDELAY_H
 
 #include <inttypes.h> // Needed for uint8_t, uint16_t, etc.
 

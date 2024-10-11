@@ -33,6 +33,7 @@ volatile uint8_t adc_read(uint8_t channel){
 		// Wait for conversion to finish
 		uint16_t convTime = DEF_ADC_CONV_TIME;
 		_delay_us(convTime);
+		//_delay_ms(convTime);
 
 		// Read requested channel
 		if (channel <= DEF_ADC_CHANNELS){ // Returns 0 if channel number is invalid

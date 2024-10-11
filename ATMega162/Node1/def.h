@@ -13,7 +13,7 @@
 
 #define DEF_ADR_SRAM 0x1800			// Start address for the SRAM
 #define DEF_ADR_ADC 0x1400			// Start address for the ADC
-#define DEF_ADR_OLED_DAT 0x1200		// Start address for the OLED Data
+#define DEF_ADR_OLED_DATA 0x1200		// Start address for the OLED Data
 #define DEF_ADR_OLED_CMD 0x1000		// Start address for the OLED Commands
 
 #define DEF_ADC_CHANNELS 4

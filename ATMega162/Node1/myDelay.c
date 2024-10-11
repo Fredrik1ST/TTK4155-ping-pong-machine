@@ -1,7 +1,8 @@
 
 #include <inttypes.h>
+#include "def.h"
 
-#ifndef F_CPU
+#ifndef F_CPU 
 #define F_CPU 4915200
 #endif
 

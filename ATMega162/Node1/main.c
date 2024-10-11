@@ -5,6 +5,8 @@
 #include "uart.h"
 #include "sram.h"
 #include "adc.h"
+#include "gamepad.h"
+#include "oled.h"
 
 #include <util/delay.h>
 #include <inttypes.h> // Needed for uint8_t, uint16_t, etc.
@@ -19,30 +21,14 @@ int main(void) {
 	UART_init(DEF_UBBR);
 	SRAM_init();
 	adc_init();
+	gamepad_init();
+	oled_init();
+	oled_reset();
 	
 	while(1){
-
-		adc_read(1);
+		oled_print("Test :( ", 5);
 		_delay_ms(500);
-		adc_read(2);
-		_delay_ms(500);
-		
-		mem_adc[0] = 0;
-		
-		_delay_ms(1); // Give ADC time to convert
-		
-		uint8_t adc_ch0 = mem_adc[0]; // Read first channel from ADC
-		
-		uint8_t adc_ch1 = mem_adc[0]; // Read second channel from ADC
-		
-		uint8_t adc_ch2 = mem_adc[0];
-		
-		uint8_t adc_ch3 = mem_adc[0];
-		
-		printf("ADC0: %02X    -    ADC1: %02X\r\n\r\n", adc_ch0, adc_ch1);
-		
-		_delay_ms(500);
-
+		oled_reset();
 	}
 	return 0;
 }
