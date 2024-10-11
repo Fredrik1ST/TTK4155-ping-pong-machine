@@ -102,7 +102,7 @@ void oled_reset(){
 
 
 void oled_printChar(char c, char font){
-	printf("%c = %d\r\n", c, c);
+	//printf("%c = %d\r\n", c, c);
 	if (c >= 0x20 && c <= 0x7F){ // Do not attempt to write if ASCII character does not exist
 		switch (font){
 			case 4: // 4x8 SMALL

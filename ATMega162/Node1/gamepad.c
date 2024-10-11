@@ -22,7 +22,7 @@ Gamepad read_gamepad(){
 	gp.pos_y = (int16_t)adc_read(CH_JOYSTICK_Y);
 	gp.pos_left = (int16_t)adc_read(CH_SLIDER_LEFT);
 	gp.pos_right = (int16_t)adc_read(CH_SLIDER_RIGHT);
-	gp.btn = (PINB & (1<<PB2));
+	gp.btn = !((PINB & (1 << PB2)) >> PB2);
 	
 	// printf("RAW X: %d    -    Y: %d    -    L: %d    -    R: %d\r\n\r\n", gp.pos_x, gp.pos_y, gp.pos_left, gp.pos_right);
 
@@ -36,6 +36,9 @@ Gamepad calibrate_gamepad(Gamepad input){
 	gp.pos_y = (input.pos_y - 127) * 100 / 127;
 	gp.pos_left = (input.pos_left - 127) * 100 / 127;
 	gp.pos_right = (input.pos_right - 127) * 100 / 127;
+	
+	gp.btn = input.btn;
+	
 	
 	// printf("CAL X: %d    -    Y: %d    -    L: %d    -    R: %d\r\n\r\n", gp.pos_x, gp.pos_y, gp.pos_left, gp.pos_right);
 	
