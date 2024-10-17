@@ -4,6 +4,14 @@
 
 adc.c
 
+can.c
+
+mcp2515.c
+
+menu.c
+
+spi.c
+
 myDelay.c
 
 gamepad.c

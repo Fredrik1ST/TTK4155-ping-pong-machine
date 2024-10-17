@@ -115,17 +115,77 @@ Notes:
 
 
 ## Lab 4 - OLED display and user interface
+#### Hardware notes
+- Make sure the EXTSEL jumper is connected. Without the EXTSEL jumper, the monitor will not be controllable from outside the USB multifunction board.
+- Pin 1-3 are the Chip select, Data/Command and Write pins. They are connected to the Nand gate output, the 3rd adress bit on the white adress bus, and the write pin of the ATMega162.
+- The next 8 pins are the data pins, they are connected to our purple data bus. Last pin is ground (not used).
+- Reading from the display is not possible (or desirable), due to the way the USB multifunction board has been constructed.
 
-Make sure the EXTSEL jumper is connected before starting to debug. Without the EXTSEL jumper, the monitor will not be controllable from outside the USB multifunction board.
+#### Software notes
+- Use the initialization code from the data sheet. 
+	- This will set up writing so that it is written horizontally in "pages". 
+	- Each page consists of 128 columns that are 8 pixels tall, written from top to bottom.
+	- After writing 8 bits / pixels, writing will automatically continue to the next column.
+```c
+void oled_init(){
+	// From LY190-128064 data sheet
+	oled_write_cmd(0xAE); // Display off
+	oled_write_cmd(0xA1); // Segment remap
+	oled_write_cmd(0xDA); // Common pads hardware: alternative
+	oled_write_cmd(0x12);
+	oled_write_cmd(0xC8); // Common output scan direction:com63~com0
+	oled_write_cmd(0xA8); // Multiplex ration mode:63
+	oled_write_cmd(0x3F);
+	oled_write_cmd(0xD5); // Display divide ratio/osc. freq. mode
+	oled_write_cmd(0x80);
+	oled_write_cmd(0x81); // Contrast control
+	oled_write_cmd(0x50);
+	oled_write_cmd(0xD9); // Set pre-charge period
+	oled_write_cmd(0x21);
+	oled_write_cmd(0x20); // Set Memory Addressing Mode (mode is selected in next line)
+	oled_write_cmd(0x02); // Page addressing mode
+	oled_write_cmd(0xDB); // VCOM deselect level mode
+	oled_write_cmd(0x30);
+	oled_write_cmd(0xAD); // Master configuration
+	oled_write_cmd(0x00);
+	oled_write_cmd(0xA4); // Out follows RAM content
+	oled_write_cmd(0xA6); // Set normal display
+	oled_write_cmd(0xAF); // Display on
+}
+```
+- Each character in the provided fonts.h file is 8x8 pixels. 
+	- Stored in an array that follows the ASCII code order (Starting at space, i.e. ASCII 32).
+	- To print a character, a for-loop can be used. *pgm_read_bytes* must be used to read from PROGMEM.
+	```c
+	#include <avr/pgmspace.h>
+	// Write a character "char c" from font4 in fonts.h
+	for (uint8_t i = 0; i < 4; i++){
+		oled_write_data(pgm_read_byte(&font4[c-32][i]));
+	}
+	```
 
-The USB multifunction board has a 124x64 dot matrix monitor. In this Lab we are connecting it and making it functional.
 
-We start by connecting the pins: Pin 1-3 are the Chip select, Data/Command and Write pins. They are connected to the Nand gate output, the 3rd adress bit on the white adress bus, and the write pin of the atmel AVR.
 
-The next 8 pins are the data pins, they are connected to our purple data bus. 
+## Lab 5 - SPI & CAN Controller
+#### Hardware notes
+- Connect SPI lines from ATMega162 to the MCP2515 CAN Bus controller (the latter is the slave)
+- MCP2515 should have its own 16MHz oscillator
 
-The last pin is ground, which is not used.
+#### SPI Software notes
+- Set ATMega162 as SPI master as described in the data sheet.
+```c
+void spi_init(void){
+	DDRB |= (1 << PB5)|(1 << PB7); // MOSI out, SCK out
+	// Enable SPI as master (SPE, MSTR)
+	// Set clock rate F_CPU/16 (SPR0)
+	SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
+}
+```
+- Reading and sending works the same way. If you don't send valid data, you still receive 8 bits since the bus works like a ring buffer.
+- Use the commands and addresses from the provided "mcp2515.h"
+- Manually control the chip select pin to the MCP2515. We used PB4.
+	- NB! CS is active low. Also, don't set/reset chip select every 8 bits when writing. Wait until command + address has been sent before releasing.
 
-Reading from the display is not possible, due to the way the USB multifunction board has been constructed.
-
-Writing to the display shouldnt be more complicated than writing the data to half of the screen, getting a rising edge on write, then doing the same for the other half of the screen. This is due to the fact that we have only 512 bytes avaliable to store data to be sent, while the screen requires 912 bytes to write on the whole display.
+#### CAN Software Notes
+- Read / write from CAN nodes via RX/TX buffers. Addresses for these are not already included in the header file, so we had to add them.
+- Beware of bit timing (section 5 in data sheet). May need to be adjusted if nodes are out of sync (e.g. when interfacing with the Arduino Due in the next task).

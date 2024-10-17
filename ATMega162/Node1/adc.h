@@ -16,7 +16,7 @@
  * 
  * Use hardware counter 3 (special function of pin PD4) to generate a PWM signal that acts as the ADC's clock
  */
-void adc_init();
+void adc_init(void);
 
 
 /**

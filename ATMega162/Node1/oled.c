@@ -16,8 +16,7 @@ void oled_write_cmd(uint8_t cmd){
 }
 
 
-void oled_init()
-{
+void oled_init(){
 	// From LY190-128064 data sheet
 	oled_write_cmd(0xAE); // Display off
 	oled_write_cmd(0xA1); // Segment remap
@@ -45,15 +44,13 @@ void oled_init()
 
 
 // Go to page - a row or line on screen
-void oled_goto_page(uint8_t page)
-{
+void oled_goto_page(uint8_t page){
 	// Mask of 0x07 to avoid writing beyond first 3 bits
 	oled_write_cmd(0xB0 | (page & 0x07));
 }
 
 
-void oled_goto_col(uint8_t col)
-{
+void oled_goto_col(uint8_t col){
 	// Must be written twice (4 bits each writing for whatever reason)
 	
 	// Lower 4 bits (mask first 4 bits to avoid writing above)
@@ -67,8 +64,7 @@ void oled_goto_col(uint8_t col)
 }
 
 
-void oled_pos(uint8_t page, uint8_t col)
-{
+void oled_pos(uint8_t page, uint8_t col){
 	oled_goto_page(page);
 	oled_goto_col(col);
 }
@@ -106,22 +102,19 @@ void oled_printChar(char c, char font){
 	if (c >= 0x20 && c <= 0x7F){ // Do not attempt to write if ASCII character does not exist
 		switch (font){
 			case 4: // 4x8 SMALL
-				for (uint8_t i = 0; i < 4; i++)
-				{
+				for (uint8_t i = 0; i < 4; i++){
 					oled_write_data(pgm_read_byte(&font4[c-32][i])); // Function & font from fonts.h
 				}
 				break;
 			
 			case 8: // 8x8 LARGE
-				for (uint8_t i = 0; i < 8; i++)
-				{
+				for (uint8_t i = 0; i < 8; i++){
 					oled_write_data(pgm_read_byte(&font8[c-32][i]));
 				}
 				break;
 		
 			default: // 5x8 NORMAL
-				for (uint8_t i = 0; i < 5; i++)
-				{
+				for (uint8_t i = 0; i < 5; i++){
 					oled_write_data(pgm_read_byte(&font5[c-32][i]));
 				}
 				break;
@@ -139,8 +132,7 @@ void oled_print(const char* data, char font){
 	}
 	
 	int i = 0;
-	while(data[i] != '\0')
-	{
+	while(data[i] != '\0'){
 		oled_printChar(data[i], f);
 		++i;
 	}
