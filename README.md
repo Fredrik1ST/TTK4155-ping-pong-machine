@@ -3,7 +3,7 @@ Group 33's semester project for TTK4155 (Embedded and Industrial Computer System
 
 The purpose of this project is to assemble and program a machine for a mechanical game of single-player pong. It consists of two main nodes:
 
-**Node 1**: A breadboard with an [Atmel AVR ATmega162](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2513-8-bit-AVR-Microntroller-ATmega162_Datasheet.pdf). Manages the user interface, e.g. reading joysticks inputs via ADC and displaying graphics on an OLED.
+**Node 1**: A breadboard with an [Atmel AVR ATmega162](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2513-8-bit-AVR-Microntroller-ATmega162_Datasheet.pdf), as well as a USB multifunction with joysticks, buttons and an OLED display for user interface.
 
 **Node 2**: An [Arduino Due](https://docs.arduino.cc/hardware/due) (based on [Atmel ATSAM3X8E](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-11057-32-bit-Cortex-M3-Microcontroller-SAM3X-SAM3A_Datasheet.pdf)) to control actuators & IO. Communicates with node 1 using CAN bus.
 
@@ -12,9 +12,16 @@ This document is meant as an informal progress report where we jot down anything
 [comment]: <![Welcome to byggern.](https://i.imgur.com/ccaTs94.mp4)> 
 <p style="font-family: Papyrus, Charcoal, fantasy; color:red">🗲 Byggern Begins 🗲</p>
 
+# Table of contents
+1. [Initial assembly of Atmega162 and RS-232](#lab1)
+2. [Address decoding and external RAM](#lab2)
+3. [A/D converting and joystick inputs](#lab3)
+4. [OLED display and user interface](#lab4)
+5. [SPI & CAN Controller](#lab5)
+6. [Assembly of node 2 with CAN Bus communication](#lab6)
 
 
-## Lab 1 - Initial assembly of Atmega162 and RS-232
+## Lab 1 - Initial assembly of Atmega162 and RS-232 <a name="lab1"></a>
 
 Quick rundown:
 - V<sub>a</sub> = 9V. Reduced to 5V by an [LMN7805](https://www.sparkfun.com/datasheets/Components/LM7805.pdf) voltage regulator.
@@ -54,7 +61,8 @@ void UART_init(unsigned int ubrr)
 
 
 
-## Lab 2 - Address decoding and external RAM
+
+## Lab 2 - Address decoding and external RAM <a name="lab2"></a>
 
 The ATmega162 has a built-in interface for external SRAM that can be activated by setting the SRE bit in the MCUCR register:
 
@@ -100,7 +108,8 @@ The address decoder sends a signal to the components' "chip select" pins wheneve
 
 
 
-## Lab 3 - A/D converting and joystick inputs
+
+## Lab 3 - A/D converting and joystick inputs <a name="lab3"></a>
 Our gamepad has a joystick consisting of two variable resistors (potmeter), two sliders and some buttons. To read their position a [MAX156 analog-to-digital-converter (ADC)](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX155-MAX156.pdf) is used. 
 
 The MAX156 converts input voltages into 8-bit numbers every time the write strobe signal is triggered from the ATmega162. Every time the read strobe is triggered after that, it outputs the next channel's converted voltage on its pins.
@@ -114,7 +123,8 @@ Notes:
 
 
 
-## Lab 4 - OLED display and user interface
+
+## Lab 4 - OLED display and user interface <a name="lab4"></a>
 #### Hardware notes
 - Make sure the EXTSEL jumper is connected. Without the EXTSEL jumper, the monitor will not be controllable from outside the USB multifunction board.
 - Pin 1-3 are the Chip select, Data/Command and Write pins. They are connected to the Nand gate output, the 3rd adress bit on the white adress bus, and the write pin of the ATMega162.
@@ -153,9 +163,9 @@ void oled_init(){
 	oled_write_cmd(0xAF); // Display on
 }
 ```
-- Each character in the provided fonts.h file is 8x8 pixels. 
+- Each character in fonts.h is an array of columns. 
 	- Stored in an array that follows the ASCII code order (Starting at space, i.e. ASCII 32).
-	- To print a character, a for-loop can be used. *pgm_read_bytes* must be used to read from PROGMEM.
+	- To print a character, a for-loop can be used. *pgm_read_byte* must be used to read from PROGMEM.
 	```c
 	#include <avr/pgmspace.h>
 	// Write a character "char c" from font4 in fonts.h
@@ -189,3 +199,15 @@ void spi_init(void){
 #### CAN Software Notes
 - Read / write from CAN nodes via RX/TX buffers. Addresses for these are not already included in the header file, so we had to add them.
 - Beware of bit timing (section 5 in data sheet). May need to be adjusted if nodes are out of sync (e.g. when interfacing with the Arduino Due in the next task).
+
+
+
+
+## Lab 6 - Assembly of node 2 with CAN Bus communication
+### Hardware notes
+- Contains an Arduino Due (ATSAM3X8E) with a motor control shield consisting of
+	- An [Allegro A3949](https://www.allegromicro.com/-/media/files/datasheets/a3959-datasheet.pdf) motor driver, controlled by PWM
+ 	- A [MCP2562 CAN transceiver](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005167C.pdf)
+
+### Software notes
+- Focus on getting PuTTY and CAN between the nodes up and running.
