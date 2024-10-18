@@ -10,7 +10,9 @@ The purpose of this project is to assemble and program a machine for a mechanica
 This document is meant as an informal progress report where we jot down anything of note.
 
 [comment]: <![Welcome to byggern.](https://i.imgur.com/ccaTs94.mp4)> 
-<p style="font-family: Papyrus, Charcoal, fantasy; color:red">🗲 Byggern Begins 🗲</p>
+<p style="font-family: Papyrus, Charcoal, fantasy; color:red">🗲 Byggern Begins 🗲</p> 
+
+<br />
 
 # Table of contents
 1. [Initial assembly of Atmega162 and RS-232](#lab1)
@@ -20,6 +22,8 @@ This document is meant as an informal progress report where we jot down anything
 5. [SPI & CAN Controller](#lab5)
 6. [Assembly of node 2 with CAN Bus communication](#lab6)
 
+
+<br />
 
 ## Lab 1 - Initial assembly of Atmega162 and RS-232 <a name="lab1"></a>
 
@@ -60,7 +64,7 @@ void UART_init(unsigned int ubrr)
 ```
 
 
-
+<br />
 
 ## Lab 2 - Address decoding and external RAM <a name="lab2"></a>
 
@@ -107,7 +111,7 @@ Notice the three "standalone" bits in the binary addresses. Since they form a un
 The address decoder sends a signal to the components' "chip select" pins whenever we read or write to their addresses. This makes the component only listen to the Write / Read control strobe when the signal is meant for them.
 
 
-
+<br />
 
 ## Lab 3 - A/D converting and joystick inputs <a name="lab3"></a>
 Our gamepad has a joystick consisting of two variable resistors (potmeter), two sliders and some buttons. To read their position a [MAX156 analog-to-digital-converter (ADC)](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX155-MAX156.pdf) is used. 
@@ -122,7 +126,7 @@ Notes:
 - **Weird behavior from address pin PC02 as long as compiler optimization was enabled in Microchip Studio**
 
 
-
+<br />
 
 ## Lab 4 - OLED display and user interface <a name="lab4"></a>
 #### Hardware notes
@@ -163,20 +167,31 @@ void oled_init(){
 	oled_write_cmd(0xAF); // Display on
 }
 ```
-- Each character in fonts.h is an array of columns. 
-	- Stored in an array that follows the ASCII code order (Starting at space, i.e. ASCII 32).
-	- To print a character, a for-loop can be used. *pgm_read_byte* must be used to read from PROGMEM.
-	```c
-	#include <avr/pgmspace.h>
-	// Write a character "char c" from font4 in fonts.h
-	for (uint8_t i = 0; i < 4; i++){
-		oled_write_data(pgm_read_byte(&font4[c-32][i]));
-	}
-	```
+  
+```c
+// Each character in fonts.h is in an array of 8-pixel columns.
+// Characters are stored in the ASCII code order, starting at 32 (space)
+// Some examples from the small font (4 columns wide, 6 pixels tall)
+const unsigned char PROGMEM font4[95][4] = {
+		{0b00000000,0b00000000,0b00000000,0b00000000}, // Space (ASCII 32)
+		{0b00000000,0b01011100,0b00000000,0b00000000}, // ! (ASCII 33)
+		{0b00001100,0b00000000,0b00001100,0b00000000}, // " (ASCII 34)
+		// ... and so on
+```
+- Use a for loop to print the characters. Since the fonts are stored in flash memory (PROGMEM) instead of RAM, *pgm_read_byte()* must be used to read the arrays.
+```c
+#include <avr/pgmspace.h>
+// Write a character "char c" from font4 in fonts.h
+// Loop writes one 8-pixel column per iteration
+for (uint8_t i = 0; i < 4; i++){
+	oled_write_data(pgm_read_byte(&font4[c-32][i]));
+}
+```
 
 
+<br />
 
-## Lab 5 - SPI & CAN Controller
+## Lab 5 - SPI & CAN Controller <a name="lab5"></a>
 #### Hardware notes
 - Connect SPI lines from ATMega162 to the MCP2515 CAN Bus controller (the latter is the slave)
 - MCP2515 should have its own 16MHz oscillator
@@ -201,13 +216,13 @@ void spi_init(void){
 - Beware of bit timing (section 5 in data sheet). May need to be adjusted if nodes are out of sync (e.g. when interfacing with the Arduino Due in the next task).
 
 
+<br />
 
-
-## Lab 6 - Assembly of node 2 with CAN Bus communication
-### Hardware notes
-- Contains an Arduino Due (ATSAM3X8E) with a motor control shield consisting of
+## Lab 6 - Assembly of node 2 with CAN Bus communication <a name="lab6"></a>
+#### Hardware notes
+- Contains an Arduino Due ([ATSAM3X8E](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-11057-32-bit-Cortex-M3-Microcontroller-SAM3X-SAM3A_Datasheet.pdf)) with a motor control shield consisting of
 	- An [Allegro A3949](https://www.allegromicro.com/-/media/files/datasheets/a3959-datasheet.pdf) motor driver, controlled by PWM
- 	- A [MCP2562 CAN transceiver](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005167C.pdf)
+ 	- An [MCP2562 CAN transceiver](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005167C.pdf) for communicating with node 1
 
-### Software notes
+#### Software notes
 - Focus on getting PuTTY and CAN between the nodes up and running.
