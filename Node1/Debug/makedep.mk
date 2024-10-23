@@ -6,19 +6,21 @@ adc.c
 
 can.c
 
+gamepad.c
+
+main.c
+
 mcp2515.c
 
 menu.c
 
-spi.c
-
 myDelay.c
-
-gamepad.c
 
 oled.c
 
-main.c
+spi.c
+
+square_wave_test.c
 
 sram.c
 
