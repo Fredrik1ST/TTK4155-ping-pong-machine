@@ -8,6 +8,13 @@ void can_init(void){
 	mcp2515_init();
 }
 
+/*
+* Initialize CAN Bus controller via SPI, in loopback mode (for testing)
+*/
+void can_init_loopback(void){
+	mcp2515_init_loopback();
+}
+
 
 /*
 * Receive a CAN message via MCP2515
@@ -36,4 +43,8 @@ void can_send(CanMsg* msg){
 		mcp2515_write(TXB0D0 + i, msg->data[i]);
 	}
 	mcp2515_request_to_send(MCP_RTS_TX0); // Request to send via transmit buffer 0
+}
+
+char* can_print(CanMsg msg){
+	return "test";
 }

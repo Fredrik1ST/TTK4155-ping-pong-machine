@@ -40,5 +40,8 @@ typedef struct{
 * Initialize CAN controller via SPI
 */
 void can_init(void);
+void can_init_loopback(void);
+void can_recv(CanMsg* msg);
+void can_send(CanMsg* msg);
 
 #endif /* CAN_H */

@@ -1,6 +1,6 @@
 
 #include "sam.h"
-#include "../../../lib/can/can.h"
+#include "can.h"
 #include <stdio.h>
 
 void can_printmsg(CanMsg m){
@@ -44,7 +44,8 @@ void can_init(CanInit init, uint8_t rxInterrupt){
     PMC->PMC_PCER1 |= 1 << (ID_CAN0 - 32);
     
     //Set baudrate, Phase1, phase2 and propagation delay for can bus. Must match on all nodes!
-    CAN0->CAN_BR = init.reg; 
+    // CAN0->CAN_BR = init.reg; 
+	CAN0->CAN_BR = 0x00290165; // sjw on, BRP 41+1, PS1=6+1, PS2=5+1
     
 
 
@@ -59,7 +60,7 @@ void can_init(CanInit init, uint8_t rxInterrupt){
     CAN0->CAN_MB[rxMailbox].CAN_MMR = CAN_MMR_MOT_MB_RX;
     CAN0->CAN_MB[rxMailbox].CAN_MCR |= CAN_MCR_MTCR;
     if(rxInterrupt){
-        // Enable interrupt on receive
+        // Enable interrupt on receivex
         CAN0->CAN_IER |= (1 << rxMailbox); 
         // Enable interrupt in NVIC 
         NVIC_EnableIRQ(ID_CAN0);
@@ -94,9 +95,11 @@ uint8_t can_rx(CanMsg* m){
 
     // Get message ID
     m->id = (uint8_t)((CAN0->CAN_MB[rxMailbox].CAN_MID & CAN_MID_MIDvA_Msk) >> CAN_MID_MIDvA_Pos);
+	printf("ID: %02X", m->id);
         
     // Get data length
     m->length = (uint8_t)((CAN0->CAN_MB[rxMailbox].CAN_MSR & CAN_MSR_MDLC_Msk) >> CAN_MSR_MDLC_Pos);
+	printf("Length: %02X", m->length);
     
     // Get data from CAN mailbox
     m->dword[0] = CAN0->CAN_MB[rxMailbox].CAN_MDL;

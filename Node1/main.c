@@ -14,6 +14,7 @@
 #include "menu.h"
 #include "spi.h"
 #include "mcp2515.h"
+#include "can.h"
 
 int main(void) {
 	UART_init(DEF_UBBR);
@@ -23,11 +24,8 @@ int main(void) {
 	oled_init();
 	oled_reset();
 	menu_init();
-	//mcp2515_init();
-	mcp2515_init_loopback(); // TODO - Delete and replace with mcp2515_init(); after CAN controller test
-	
-	uint8_t sendVal = 0; // TODO: Delete after CAN controller test
-	uint8_t sendVal2 = 200; // TODO: Delete after CAN controller test
+
+	can_init();
 	
 	Gamepad gp;
 	Dir new_gp_dir;
@@ -60,13 +58,25 @@ int main(void) {
 		
 		// =================================================
 		// Test MCP2515 CAN Controller in loopback mode
-		_delay_ms(500);
-		sendVal += 1;
-		mcp2515_write(0xAA, sendVal);
-		_delay_ms(500);
-		uint8_t recVal = mcp2515_read(0xAA);
-		printf("Sent: %02X    -    Received: %02X \r\n\r\n", sendVal, recVal);
+		CanMsg* msgOut;
+		msgOut->id = 0xA1;
+		msgOut->len = 2;
+		msgOut->data[0] = gp.pos_x;
+		msgOut->data[1] = gp.pos_y;
 		
+		can_send(msgOut);
+		printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %d %d \r\n\r\n", msgOut->id, msgOut->len, gp.pos_x, gp.pos_y);
+		
+		/*
+		CanMsg* msgIn;
+		can_recv(msgIn);
+		uint8_t recId = msgIn->id;
+		uint8_t recVal = msgIn->data[0];
+		uint8_t recSize = msgIn->len;
+		_delay_ms(2000);
+		printf("Recv: ID: %02X    -    Len: %02X    -    Dat: %d %d \r\n\r\n", msgIn->id, msgIn->len, msgIn->data[0], msgIn->data[1]);
+		_delay_ms(2000);
+		*/
 	}
 	return 0;
 }

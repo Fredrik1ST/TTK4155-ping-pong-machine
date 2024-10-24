@@ -32,9 +32,9 @@ void mcp2515_init(){
 	mcp2515_bit_modify(MCP_CANINTF, 0b00000001, 0); // Reset interrupt bit in buffer 0 (must be done to receive next 8 bits)
 	
 	// Configure bit timing if out of sync with other nodes.
-	//mcp2515_write(MCP_CNF1, TODO);	// BRP (Baud Rate Prescaling)
-	//mcp2515_write(MCP_CNF2, TODO);	// Propagation Segment & PS1
-	//mcp2515_write(MCP_CNF3, TODO);	// PS2
+	mcp2515_write(MCP_CNF1, 0x03);	// BRP (Baud Rate Prescaling) set to 4 (3+1 according to data sheet)
+	mcp2515_write(MCP_CNF2, 0xB1);	// Propagation Segment & PS1 (3+1 for PSeg, 3+1 for PS1)
+	mcp2515_write(MCP_CNF3, 0x05);	// PS2 (3+1)
 
 	mcp2515_write(MCP_CANCTRL, MODE_NORMAL); // Enter normal mode
 	mode = mcp2515_read(MCP_CANSTAT);
