@@ -980,7 +980,7 @@ int main(void) {
 		
 		
 		// =================================================
-		// Test MCP2515 CAN Controller in loopback mode
+		// Test CAN communication with node 2
 		CanMsg* msgOut;
 		msgOut->id = 0xA1;
      a38:	00 e0       	ldi	r16, 0x00	; 0
@@ -1001,7 +1001,6 @@ int main(void) {
      a50:	db 80       	ldd	r13, Y+3	; 0x03
      a52:	bc 80       	ldd	r11, Y+4	; 0x04
      a54:	d4 82       	std	Z+4, r13	; 0x04
-		
 		can_send(msgOut);
      a56:	c8 01       	movw	r24, r16
      a58:	0e 94 aa 03 	call	0x754	; 0x754 <can_send>
@@ -1242,15 +1241,15 @@ void mcp2515_init(){
      b8c:	0e 94 78 05 	call	0xaf0	; 0xaf0 <mcp2515_bit_modify>
 	
 	// Configure bit timing if out of sync with other nodes.
-	mcp2515_write(MCP_CNF1, 0x03);	// BRP (Baud Rate Prescaling) set to 4 (3+1 according to data sheet)
+	mcp2515_write(MCP_CNF1, 0x03);	// BRP (Baud Rate Prescaling) = 3+1
      b90:	63 e0       	ldi	r22, 0x03	; 3
      b92:	8a e2       	ldi	r24, 0x2A	; 42
      b94:	0e 94 59 05 	call	0xab2	; 0xab2 <mcp2515_write>
-	mcp2515_write(MCP_CNF2, 0xB1);	// Propagation Segment & PS1 (3+1 for PSeg, 3+1 for PS1)
+	mcp2515_write(MCP_CNF2, 0xB1);	// Propagation Segment PS = 1+1, PS1 = 5+1
      b98:	61 eb       	ldi	r22, 0xB1	; 177
      b9a:	89 e2       	ldi	r24, 0x29	; 41
      b9c:	0e 94 59 05 	call	0xab2	; 0xab2 <mcp2515_write>
-	mcp2515_write(MCP_CNF3, 0x05);	// PS2 (3+1)
+	mcp2515_write(MCP_CNF3, 0x05);	// PS2 = 5+1
      ba0:	65 e0       	ldi	r22, 0x05	; 5
      ba2:	88 e2       	ldi	r24, 0x28	; 40
      ba4:	0e 94 59 05 	call	0xab2	; 0xab2 <mcp2515_write>

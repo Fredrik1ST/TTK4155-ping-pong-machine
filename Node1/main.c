@@ -57,13 +57,12 @@ int main(void) {
 		
 		
 		// =================================================
-		// Test MCP2515 CAN Controller in loopback mode
+		// Test CAN communication with node 2
 		CanMsg* msgOut;
 		msgOut->id = 0xA1;
 		msgOut->len = 2;
 		msgOut->data[0] = gp.pos_x;
 		msgOut->data[1] = gp.pos_y;
-		
 		can_send(msgOut);
 		printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %d %d \r\n\r\n", msgOut->id, msgOut->len, gp.pos_x, gp.pos_y);
 		
