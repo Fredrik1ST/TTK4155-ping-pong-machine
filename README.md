@@ -224,5 +224,9 @@ void spi_init(void){
 	- An [Allegro A3949](https://www.allegromicro.com/-/media/files/datasheets/a3959-datasheet.pdf) motor driver, controlled by PWM
  	- An [MCP2562 CAN transceiver](https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005167C.pdf) for communicating with node 1
 
+
 #### Software notes
-- Focus on getting PuTTY and CAN between the nodes up and running.
+- For CAN bit timing: set the phase segments equal in node 1 and 2, and find a BRP (baud rate prescaling) value that makes the Time Quanta (TQ) as equal as possible.
+	- Node 1 TQ = F_OSC / BRP = 16MHz / 4 = 5ns
+	- Node 2 TQ = MCK / BRP = 42Mhz / 20 = 5ns
+	- NB! Most registers are offset by n+1, so if you want e.g. BRP = 4, write 3 to the register.

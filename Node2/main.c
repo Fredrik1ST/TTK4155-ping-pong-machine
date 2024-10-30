@@ -9,8 +9,8 @@ int main(void) {
     /* Initialize the SAM system */
     SystemInit();
 	uart_init(F_CPU, 9600);
-	//CanInit canCfg = (CanInit){.brp = 67, .phase1 = 3, .phase2 = 3, .propag = 3};
-	CanInit canCfg = (CanInit){.brp = 15, .phase1 = 6, .phase2 = 5, .propag = 0};
+	//CanInit canCfg = (CanInit){.brp = 67, .phase1 = 5, .phase2 = 5, .propag = 1}; // Phase values from node 1 (minus one, according to datasheet)
+	CanInit canCfg = (CanInit){.brp = 19, .phase1 = 5, .phase2 = 5, .propag = 1}; // Phase values from node 1 (minus one, according to datasheet)
 	can_init(canCfg, 0);
 
     /* Replace with your application code */

@@ -44,9 +44,10 @@ void can_init(CanInit init, uint8_t rxInterrupt){
     PMC->PMC_PCER1 |= 1 << (ID_CAN0 - 32);
     
     //Set baudrate, Phase1, phase2 and propagation delay for can bus. Must match on all nodes!
-    // CAN0->CAN_BR = init.reg; 
-	CAN0->CAN_BR = 0x00290165; // sjw on, BRP 41+1, PS1=6+1, PS2=5+1
-    
+	// CAN0->CAN_BR = 0x00290165; // BRP 33+1, PS=1+1, PS1=6+1, PS2=5+1
+	// CAN0->CAN_BR = 0x00290155; // BRP 33+1, PS=1+1, PS1=5+1, PS2=5+1
+	// CAN0->CAN_BR = 0x00420155; // BRP 66+1, PS=1+1, PS1=5+1, PS2=5+1
+	CAN0->CAN_BR = init.reg; 
 
 
     // Configure mailboxes
