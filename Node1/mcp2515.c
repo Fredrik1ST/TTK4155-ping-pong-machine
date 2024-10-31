@@ -24,22 +24,27 @@ void mcp2515_init(){
 	
 	mcp2515_reset();
 	uint8_t mode = mcp2515_read(MCP_CANSTAT);
+	mode = mcp2515_read(MCP_CANSTAT);
 	if ((mode & MODE_MASK) != MODE_CONFIG){
-		printf ("ERROR: MCP2515 is NOT in config mode after reset!\r\n");
-	}
+		printf ("ERROR %02X: MCP2515 is NOT in config mode after reset!\r\n", mode);
+	}else{
+	printf("MCP2515 entered config mode\r\n");
+}
 
 	mcp2515_bit_modify(MCP_CANINTE, 0b00000001, 0); // Enable interrupt bit when Receive Buffer 0 has new data
 	mcp2515_bit_modify(MCP_CANINTF, 0b00000001, 0); // Reset interrupt bit in buffer 0 (must be done to receive next 8 bits)
 	
-	// Configure bit timing if out of sync with other nodes.
+	// Configure bit timing
 	mcp2515_write(MCP_CNF1, 0x03);	// BRP (Baud Rate Prescaling) = 3+1
-	mcp2515_write(MCP_CNF2, 0xB1);	// Propagation Segment PS = 1+1, PS1 = 5+1
-	mcp2515_write(MCP_CNF3, 0x05);	// PS2 = 5+1
+	mcp2515_write(MCP_CNF2, 0xB1);	// Propagation Segment PS = 1+1, PS1 = 7+1
+	mcp2515_write(MCP_CNF3, 0x85);	// PS2 = 5+1, BTLMode ON (muy importante)
 
 	mcp2515_write(MCP_CANCTRL, MODE_NORMAL); // Enter normal mode
 	mode = mcp2515_read(MCP_CANSTAT);
 	if ((mode & MODE_MASK ) != MODE_NORMAL) {
-		printf ("ERROR: MCP2515 is NOT in normal mode!\n");
+		printf("ERROR: MCP2515 is NOT in normal mode!\r\n");
+	}else{
+		printf("MCP2515 entered normal mode\r\n");
 	}
 }
 
@@ -53,10 +58,15 @@ void mcp2515_init_loopback(){ // Init MCP in loopback mode (for testing)
 	mcp2515_reset();
 	uint8_t mode = mcp2515_read(MCP_CANSTAT);
 	if ((mode & MODE_MASK) != MODE_CONFIG){
-		printf (" ERROR: MCP2515 is NOT in config mode after reset!\r\n");
+		printf (" ERROR %02X: MCP2515 is NOT in config mode after reset!\r\n", mode);
 	}else{
 		printf(" MCP2515 is working my dudes! :) \r\n");
 	}
+	
+	// Configure bit timing
+	mcp2515_write(MCP_CNF1, 0x03);	// BRP (Baud Rate Prescaling) = 3+1
+	mcp2515_write(MCP_CNF2, 0xB1);	// Propagation Segment PS = 1+1, PS1 = 7+1
+	mcp2515_write(MCP_CNF3, 0x05);	// PS2 = 5+1
 	
 	// Set to loopback mode and verify
 	mcp2515_write(0xF, MODE_LOOPBACK);

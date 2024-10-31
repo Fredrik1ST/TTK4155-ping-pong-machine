@@ -28,19 +28,13 @@ void menu_func0(){
 	printf("First menu selected\n");
 	oled_print("First menu selected", 0);
 	_delay_ms(500);
-	_delay_ms(500);
-	_delay_ms(500);
-	_delay_ms(500);
-	_delay_ms(500);
-	_delay_ms(500);
 }
 
 void menu_func1(){
 	printf("Second menu selected\n");
 	oled_reset();
 	oled_print("Second menu selected", 0);
-	_delay_ms(5000);
-
+	_delay_ms(500);
 }
 
 bool menu_move_back(){

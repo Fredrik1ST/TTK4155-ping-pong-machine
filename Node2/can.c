@@ -72,7 +72,7 @@ void can_init(CanInit init, uint8_t rxInterrupt){
 }
 
 
-void can_tx(CanMsg m){
+void can_tx(volatile CanMsg m){
     while(!(CAN0->CAN_MB[txMailbox].CAN_MSR & CAN_MSR_MRDY)){}
     
     // Set message ID and use CAN 2.0B protocol
@@ -96,16 +96,31 @@ uint8_t can_rx(CanMsg* m){
 
     // Get message ID
     m->id = (uint8_t)((CAN0->CAN_MB[rxMailbox].CAN_MID & CAN_MID_MIDvA_Msk) >> CAN_MID_MIDvA_Pos);
-	printf("ID: %02X", m->id);
+	printf("\r\nID: %02X  -  " , m->id);
         
     // Get data length
     m->length = (uint8_t)((CAN0->CAN_MB[rxMailbox].CAN_MSR & CAN_MSR_MDLC_Msk) >> CAN_MSR_MDLC_Pos);
-	printf("Length: %02X", m->length);
+	printf("Length: %02X  -  ", m->length);
     
     // Get data from CAN mailbox
     m->dword[0] = CAN0->CAN_MB[rxMailbox].CAN_MDL;
     m->dword[1] = CAN0->CAN_MB[rxMailbox].CAN_MDH;
-                
+	
+	// Fill byte array
+	for (uint8_t i=0; i < m->length; i++) {
+		if (i < 4) {
+			m->byte[i] = (m->dword[0] >> i*8) & 0xFF;
+		}else {
+			m->byte[i] = (m->dword[0] >> i*8) & 0xFF;
+		}
+	}
+		
+	m->byte[0] = m->dword[0] & 0xFF;
+	m->byte[1] = (m->dword[1] >> 8) & 0xFF;
+	
+	printf("DatDword: %04X  -  ", m->dword[0]);
+ 	printf("DatByte: %02X %02X %02X %02X %02X %02X %02X %02X", m->byte[0], m->byte[1], m->byte[2], m->byte[3], m->byte[4], m->byte[5], m->byte[6], m->byte[7]);
+	
     // Reset for new receive
     CAN0->CAN_MB[rxMailbox].CAN_MMR = CAN_MMR_MOT_MB_RX;
     CAN0->CAN_MB[rxMailbox].CAN_MCR |= CAN_MCR_MTCR;

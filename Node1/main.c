@@ -54,17 +54,17 @@ int main(void) {
 			menu_selectPage();
 		}
 		prev_gp_dir = new_gp_dir;
-		
+
 		
 		// =================================================
 		// Test CAN communication with node 2
 		CanMsg* msgOut;
-		msgOut->id = 0xA1;
+		msgOut->id = 0xA5;
 		msgOut->len = 2;
 		msgOut->data[0] = gp.pos_x;
 		msgOut->data[1] = gp.pos_y;
 		can_send(msgOut);
-		printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %d %d \r\n\r\n", msgOut->id, msgOut->len, gp.pos_x, gp.pos_y);
+		printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %02X %02X \r\n\r\n", msgOut->id, msgOut->len, msgOut->data[0], msgOut->data[1]);
 		
 		/*
 		CanMsg* msgIn;
@@ -72,10 +72,9 @@ int main(void) {
 		uint8_t recId = msgIn->id;
 		uint8_t recVal = msgIn->data[0];
 		uint8_t recSize = msgIn->len;
-		_delay_ms(2000);
 		printf("Recv: ID: %02X    -    Len: %02X    -    Dat: %d %d \r\n\r\n", msgIn->id, msgIn->len, msgIn->data[0], msgIn->data[1]);
-		_delay_ms(2000);
 		*/
+
 	}
 	return 0;
 }

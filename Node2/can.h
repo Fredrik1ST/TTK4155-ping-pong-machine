@@ -30,18 +30,22 @@ void can_init(CanInit init, uint8_t rxInterrupt);
 
 
 // Strict-aliasing-safe reinterpret-cast
+/*
 #define union_cast(type, x) \
     (((union { \
         typeof(x) a; \
         type b; \
     })x).b)
+*/
 
 
 // Dummy type for use with `union_cast`, see below
+/*
 typedef struct Byte8 Byte8;
 struct Byte8 {
     uint8_t bytes[8];
 };
+^*/
 
 
 // CAN message data type
@@ -69,16 +73,12 @@ struct Byte8 {
 //    };
 //    can_printmsg(m);
 //    // Should print: CanMsg(id:1, length:7, data:{10, 0, 20, 0, 0, 240, 193})
-typedef struct CanMsg CanMsg;
-struct CanMsg {
+typedef struct {
     uint8_t id;
     uint8_t length;
-    union {
-        uint8_t     byte[8];
-        uint32_t    dword[2];
-        Byte8       byte8;
-    };    
-};
+	uint8_t byte[8];
+	uint32_t dword[2];
+} CanMsg;
 
 // Send a CAN message on the bus. 
 // Blocks if the bus does not receive the message (typically because one of the 
