@@ -5,9 +5,9 @@ void pwm_init(void){
 	REG_PWM_CLK |= PWM_CLK_PREB(0);		// Use clock MCK as input for PWM controller (MCK = F_CPU/2 = 42MHz)
 	REG_PWM_CLK |= PWM_CLK_DIVB(42);		// Divide MCK by 42 (=> 1MHz)
 	
-	// PWMH5 -> pin PC19 (peripheral B) according to table 38-2
-	REG_PIOC_PDR |= PIO_PDR_P19;	// Disable PIO controller for pin
-	REG_PIOC_ABSR |= PIO_ABSR_P19;	// Enable peripheral control of pin
+	// PWMH5 -> pin PB13 (peripheral B) according to table 38-2
+	REG_PIOB_PDR |= PIO_PDR_P13;	// Disable PIO controller for pin
+	REG_PIOB_ABSR |= PIO_ABSR_P13;	// Enable peripheral control of pin
 	
 	//REG_PWM_CMR5 = PWM_CMR_CALG | PWM_CMR_CPOL | PWM_CMR_CPRE_CLKA; // Left alignment, default level low, MCK without prescaler
 	REG_PWM_CPRD5 = 20000;		// Waveform period = (1*CPRD / PWM_CLK) = 20000/1MHz = 20ms

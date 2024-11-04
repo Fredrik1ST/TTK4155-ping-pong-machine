@@ -2,6 +2,10 @@
 #pragma once
 
 #include <stdint.h>
+#include "can.h"
+
+uint32_t canRxDword[2];
+uint8_t canRxByte[8];
 
 // Struct with bit timing information
 // See `can_init` for usage example
@@ -90,7 +94,7 @@ void can_tx(CanMsg m);
 uint8_t can_rx(CanMsg* m);
 
 // Print a CAN message (using `printf`)
-void can_printmsg(CanMsg m);
+void can_printmsg(CanMsg* m);
 
 
 
