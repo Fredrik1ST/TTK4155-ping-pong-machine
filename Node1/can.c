@@ -21,8 +21,8 @@ void can_init_loopback(void){
 * @param	msg		Received CAN Message
 */
 void can_recv(CanMsg* msg){
-	msg->id |= (mcp2515_read(MCP_RXB0SIDH)<<3); // Read top 8 bits
-	msg->id |= (mcp2515_read(MCP_RXB0SIDL)>>5); // Read bottom 3 bits
+	msg->id = (mcp2515_read(MCP_RXB0SIDH)<<3); // Read top 8 bits
+	msg->id |= (mcp2515_read(MCP_RXB0SIDL)>>5) & 0b111; // Read bottom 3 bits
 	msg->len = mcp2515_read(MCP_RXB0DLC);		// Read message length
 	for (int i = 0; i<msg->len; i++){
 		msg->data[i] = mcp2515_read(MCP_RXB0D0 + i);

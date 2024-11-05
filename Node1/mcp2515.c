@@ -8,12 +8,12 @@
 #include "def.h"
 
 // Stuff related to bit timing (see datasheet)
-#define MCP2515_F_CPU 16000000		// 16MHz clock connected to controller
-#define BRP 4						// Baud Rate Prescaling
-#define TQ 2 * BRP / MCP2515_F_CPU	// Time Quanta - Time between each bit
-#define PROPAGATION_SEGMENT //TODO	// *TQ - Time compensation for delay between CAN nodes (see fig. 5-2)
-#define PS1 //TODO					// *TQ - Positive time compensation for edge phase errors 
-#define PS2 //TODO					// *TQ - Negative time compensation for edge phase errors
+#define MCP2515_F_CPU 16000000	// 16MHz clock connected to controller
+#define BRP 0x3					// Baud Rate Prescaling (3+1 => TQ = 500ns)
+#define TQ 0x2 * (BRP + 0x1) / MCP2515_F_CPU	// Time Quanta = Time between each bit
+#define PROPSEG 0x01			// PROPSEG*TQ = Time compensation for delay between CAN nodes (see fig. 5-2)
+#define PS1 0x06				// Propagation segment 1 = (PS1+1)*TQ = Positive time compensation for edge phase errors 
+#define PS2 0x05				// Propagation segment 2 = (PS2+1*TQ) = Negative time compensation for edge phase errors
 
 
 void mcp2515_init(){
@@ -25,21 +25,32 @@ void mcp2515_init(){
 	mcp2515_reset();
 	uint8_t mode = mcp2515_read(MCP_CANSTAT);
 	if ((mode & MODE_MASK) != MODE_CONFIG){
-		printf ("ERROR: MCP2515 is NOT in config mode after reset!\r\n");
+		printf ("ERROR %02X: MCP2515 is NOT in config mode after reset!\r\n", mode);
+	}else{
+	printf("MCP2515 entered config mode\r\n");
 	}
+	
+	//mcp2515_write(MCP_CNF1, BRP); // Config CNF1, SJW = 1, BRP (Baud Rate Prescaling) = 3+1
+	
+	//mcp2515_write(MCP_CNF2, ((PS1 << 3) | PROPSEG)); //Config CNF2, PS1 = 7+1, PropSeg = 1+1
+	
+	//mcp2515_write(MCP_CNF3, (PS2 | BTLMODE)); // Write to CNF3: PS2 = 6+1, BTLMode ON (muy importante)
+
+	// Configure bit timing
+	mcp2515_write(MCP_CNF1, 0x03);	// BRP (Baud Rate Prescaling) = 3+1
+	mcp2515_write(MCP_CNF2, 0xB1);	// Propagation Segment PS = 1+1, PS1 = 7+1
+	mcp2515_write(MCP_CNF3, 0x85);	// PS2 = 5+1, BTLMode ON (muy importante)
 
 	mcp2515_bit_modify(MCP_CANINTE, 0b00000001, 0); // Enable interrupt bit when Receive Buffer 0 has new data
 	mcp2515_bit_modify(MCP_CANINTF, 0b00000001, 0); // Reset interrupt bit in buffer 0 (must be done to receive next 8 bits)
 	
-	// Configure bit timing if out of sync with other nodes.
-	mcp2515_write(MCP_CNF1, 0x03);	// BRP (Baud Rate Prescaling) = 3+1
-	mcp2515_write(MCP_CNF2, 0xB1);	// Propagation Segment PS = 1+1, PS1 = 5+1
-	mcp2515_write(MCP_CNF3, 0x05);	// PS2 = 5+1
 
 	mcp2515_write(MCP_CANCTRL, MODE_NORMAL); // Enter normal mode
 	mode = mcp2515_read(MCP_CANSTAT);
 	if ((mode & MODE_MASK ) != MODE_NORMAL) {
-		printf ("ERROR: MCP2515 is NOT in normal mode!\n");
+		printf("ERROR: MCP2515 is NOT in normal mode!\r\n");
+	}else{
+		printf("MCP2515 entered normal mode\r\n");
 	}
 }
 
@@ -53,7 +64,7 @@ void mcp2515_init_loopback(){ // Init MCP in loopback mode (for testing)
 	mcp2515_reset();
 	uint8_t mode = mcp2515_read(MCP_CANSTAT);
 	if ((mode & MODE_MASK) != MODE_CONFIG){
-		printf (" ERROR: MCP2515 is NOT in config mode after reset!\r\n");
+		printf (" ERROR %02X: MCP2515 is NOT in config mode after reset!\r\n", mode);
 	}else{
 		printf(" MCP2515 is working my dudes! :) \r\n");
 	}
@@ -75,15 +86,15 @@ uint8_t mcp2515_read(uint8_t adr){
 	spi_send(adr);
 	uint8_t result = spi_recv();
 	DEF_CAN_CS_OFF;
-	return result ;
+	return result;
 }
 
 
 void mcp2515_write(uint8_t adr, uint8_t data){
 	DEF_CAN_CS_ON;
-	spi_send( MCP_WRITE );
-	spi_send( adr );
-	spi_send( data );
+	spi_send(MCP_WRITE);
+	spi_send(adr);
+	spi_send(data);
 	DEF_CAN_CS_OFF;
 }
 

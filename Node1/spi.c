@@ -14,10 +14,8 @@ void spi_init(void){
 void spi_send(char cData){
 	SPDR = cData;
 	
-	// Wait for transmission complete
-	while(!(SPSR & 1<<SPIF)){
-		;
-	}
+	//Wait for transmission complete
+	while(!(SPSR & 1<<SPIF)){;};
 }
 
 // Receive data as master

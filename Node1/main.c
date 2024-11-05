@@ -54,28 +54,33 @@ int main(void) {
 			menu_selectPage();
 		}
 		prev_gp_dir = new_gp_dir;
-		
+
 		
 		// =================================================
 		// Test CAN communication with node 2
-		CanMsg* msgOut;
-		msgOut->id = 0xA1;
-		msgOut->len = 2;
-		msgOut->data[0] = gp.pos_x;
-		msgOut->data[1] = gp.pos_y;
-		can_send(msgOut);
-		printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %d %d \r\n\r\n", msgOut->id, msgOut->len, gp.pos_x, gp.pos_y);
 		
-		/*
-		CanMsg* msgIn;
-		can_recv(msgIn);
-		uint8_t recId = msgIn->id;
-		uint8_t recVal = msgIn->data[0];
-		uint8_t recSize = msgIn->len;
-		_delay_ms(2000);
-		printf("Recv: ID: %02X    -    Len: %02X    -    Dat: %d %d \r\n\r\n", msgIn->id, msgIn->len, msgIn->data[0], msgIn->data[1]);
-		_delay_ms(2000);
-		*/
+		CanMsg msgOut;
+		msgOut.id = 0x42; // Not used for anything, since there's only one message type
+		msgOut.len = 4;
+		msgOut.data[0] = gp.pos_x;
+		msgOut.data[1] = gp.pos_y;
+		msgOut.data[2] = gp.btn;
+		msgOut.data[3] = 1; // Servo header on
+		can_send(&msgOut);
+		printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %02X %02X %01X %01X \r\n\r\n", msgOut.id, msgOut.len, msgOut.data[0], msgOut.data[1], msgOut.data[2], msgOut.data[3]);
+		
+		
+		if (mcp2515_read(MCP_CANINTF)&(0x01)){
+			CanMsg msgIn;
+			can_recv(&msgIn);
+			printf("Recv: ID: %02X    -    Len: %02X    -    Dat: %02X %02X \r\n\r\n", msgIn.id, msgIn.len, msgIn.data[0], msgIn.data[1]);
+		}
+		
+		_delay_ms(500);
+		
+
+		
+	
 	}
 	return 0;
 }
