@@ -1,3 +1,3 @@
 
-
-void scorecounter(int*Fails)
+;
+//void scorecounter(int*Fails)

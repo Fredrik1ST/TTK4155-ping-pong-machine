@@ -4,6 +4,8 @@
 #include "uart.h"
 #include "time.h"
 #include "pwm.h"
+#include "ir.h"
+#include "encoder.h"
 #include <stdio.h>
 
 #define txMailbox 0
@@ -11,6 +13,7 @@
 
 int main(void) {
 	WDT->WDT_MR = WDT_MR_WDDIS; // Disable watchdog timer
+	
     SystemInit();
 	uart_init(F_CPU, 9600);
 	SysTick_Handler(); // Keep track of time for delays
@@ -19,6 +22,7 @@ int main(void) {
 	can_init(canCfg, 0);
 	
 	pwm_init();
+	IR_init();
 
     while (1) {
 		
@@ -38,6 +42,7 @@ int main(void) {
 			//printf("Recv: ID: %02X    -    Len: %02X    -    Dat: %02X %02X %01X %01X \r\n\r\n", msgIn.id, msgIn.length, msgIn.byte[0], msgIn.byte[1], msgIn.byte[2], msgIn.byte[3]);
 		}
 		
+		
 		// =================================================
 		// Decode gamepad data for motor control
 		int8_t gp_pos_x = (int8_t) msgIn.byte[0];
@@ -46,5 +51,15 @@ int main(void) {
 		int16_t servoPwmDutyCycle = -6*(gp_pos_x-29) + 1500;
 		//printf("%d %d \r\n\r\n", gp_pos_x, servoPwmDutyCycle);
 		pwm_setDutyCycle(servoPwmDutyCycle);
+		
+		
+		// =================================================
+		// Read board inputs (IR, encoder)
+		//printf("%01X \r\n\r\n", getIR());
+		
+		Encoder e;
+		encoder_read(e);
+		printf("%d \r\n", e.pos);
+		
 	}
 }

@@ -8,9 +8,9 @@
 
 void encoder_init();
 
-struct Encoder {
+typedef struct {
 	int32_t	pos;
-};
+} Encoder;
 
 int32_t encoder_read(Encoder);
 

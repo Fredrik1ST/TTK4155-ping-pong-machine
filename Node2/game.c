@@ -1,16 +1,12 @@
-#include ir.h
-#include game.h
-
+/*
+#include "ir.h"
+#include "game.h"
 
 int failstate = 0;
 int Fails = 0; 
-/**
- * @brief counts the score
- * 
- * @param Fails Updates increments this int whenever the IR beam gets broken (Rising Trigger)  
- */
-void scorecounter(int*Fails) {
-    int RT = readIR(); 
+
+void scorecounter(int* Fails){
+    int RT = getIR(); 
     if (!failstate) {
 		if (RT) {
 			Fails++;
@@ -20,4 +16,6 @@ void scorecounter(int*Fails) {
 		failstate = 0;
 	}
 }
+*/
 
+;
