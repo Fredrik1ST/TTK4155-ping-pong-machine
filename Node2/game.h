@@ -1,0 +1,3 @@
+
+
+void scorecounter(int*Fails)
