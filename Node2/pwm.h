@@ -11,18 +11,15 @@
 #include <sam.h>
 
 /**
- * Initializes the PWM module for channel 5
+ * Initializes the PWM module for channel 1
  */
-void pwm_init(void)
-
+void pwm_init(void);
 
 /**
- * Sets a new duty cycle for PWM channel 5
+ * Sets a new duty cycle for PWM channel 1
  *
  * @param dutyCycle_us The desired duty cycle in microseconds
  */
-void(pwm_setDutyCycle)(uint32_t dutyCycle_us)
-
-
+void pwm_setDutyCycle (uint32_t dutyCycle_us);
 
 #endif /* PWM_H */

@@ -73,13 +73,8 @@ int main(void) {
 		if (mcp2515_read(MCP_CANINTF)&(0x01)){
 			CanMsg msgIn;
 			can_recv(&msgIn);
-			printf("Recv: ID: %02X    -    Len: %02X    -    Dat: %02X %02X \r\n\r\n", msgIn.id, msgIn.len, msgIn.data[0], msgIn.data[1]);
+			//printf("Recv: ID: %02X    -    Len: %02X    -    Dat: %02X %02X \r\n\r\n", msgIn.id, msgIn.len, msgIn.data[0], msgIn.data[1]);
 		}
-		
-		_delay_ms(500);
-		
-
-		
 	
 	}
 	return 0;

@@ -99,11 +99,11 @@ uint8_t can_rx(CanMsg* m){
 
     // Get message ID
     m->id = (uint8_t)((CAN0->CAN_MB[rxMailbox].CAN_MID & CAN_MID_MIDvA_Msk) >> CAN_MID_MIDvA_Pos);
-	printf("\r\nID: %02X  -  " , m->id);
+	//printf("\r\nID: %02X  -  " , m->id);
         
     // Get data length
     m->length = (uint8_t)((CAN0->CAN_MB[rxMailbox].CAN_MSR & CAN_MSR_MDLC_Msk) >> CAN_MSR_MDLC_Pos);
-	printf("Length: %02X  -  ", m->length);
+	//printf("Length: %02X  -  ", m->length);
     
     // Get data from CAN mailbox
     m->dword[0] = CAN0->CAN_MB[rxMailbox].CAN_MDL;
@@ -124,8 +124,8 @@ uint8_t can_rx(CanMsg* m){
 	
 	uint8_t* BSPTR = (uint8_t*) &m->dword[0];
 	
-	printf("DatDword: %04X  -  ", m->dword[0]);
- 	printf("DatByte: %08X %02X %02X %02X %02X %02X %02X %02X", m->dword[0], m->byte[1], m->byte[2], m->byte[3], m->byte[4], m->byte[5], m->byte[6], m->byte[7]);
+	//printf("DatDword: %04X  -  ", m->dword[0]);
+ 	//printf("DatByte: %08X %02X %02X %02X %02X %02X %02X %02X", m->dword[0], m->byte[1], m->byte[2], m->byte[3], m->byte[4], m->byte[5], m->byte[6], m->byte[7]);
 	
     // Reset for new receive
     CAN0->CAN_MB[rxMailbox].CAN_MMR = CAN_MMR_MOT_MB_RX;
