@@ -3,6 +3,9 @@
 #include "fonts.h"
 #include "def.h"
 
+#define OLED_WIDTH 128
+#define OLED_HEIGHT 8   //pages
+
 
 void oled_write_data(uint8_t data){
     volatile char* adr = (char*) DEF_ADR_OLED_DATA;
@@ -136,4 +139,71 @@ void oled_print(const char* data, char font){
 		oled_printChar(data[i], f);
 		++i;
 	}
+}
+
+
+//Buffer functions
+
+uint8_t oled_buffer[OLED_HEIGHT][OLED_WIDTH];  // Buffer to store OLED display data
+
+void oled_update_buffer(uint8_t page, uint8_t col, uint8_t data) {
+    if (page < OLED_HEIGHT && col < OLED_WIDTH) {
+        oled_buffer[page][col] = data;
+    }
+}
+
+void oled_push_buffer() {
+    for (uint8_t page = 0; page < OLED_HEIGHT; page++) {
+        oled_goto_page(page);
+        oled_goto_col(0);
+        for (uint8_t col = 0; col < OLED_WIDTH; col++) {
+            oled_write_data(oled_buffer[page][col]);
+        }
+    }
+}
+
+void oled_clear_buffer() {
+    for (uint8_t page = 0; page < OLED_HEIGHT; page++) {
+        for (uint8_t col = 0; col < OLED_WIDTH; col++) {
+            oled_buffer[page][col] = 0x00;
+        }
+    }
+}
+
+void oled_printCharToBuffer(char c, char font, uint8_t page, uint8_t col) {
+    if (c >= 0x20 && c <= 0x7F) {
+        uint8_t* font_data;
+        uint8_t font_width;
+
+        switch (font) {
+            case 4:
+                font_data = font4[c - 32];
+                font_width = 4;
+                break;
+			case 5:
+				font_data = font5[c - 32];
+                font_width = 5;
+                break;
+            case 8:
+                font_data = font8[c - 32];
+                font_width = 8;
+                break;
+            default:
+                font_data = font5[c - 32];
+                font_width = 5;
+                break;
+        }
+
+        for (uint8_t i = 0; i < font_width; i++) {
+            oled_update_buffer(page, col + i, pgm_read_byte(&font_data[i]));
+        }
+    }
+}
+
+void oled_printToBuffer(const char* data, char font, uint8_t page, uint8_t col) {
+    int i = 0;
+    while (data[i] != '\0') {
+        oled_printCharToBuffer(data[i], font, page, col + i * (font == 8 ? 8 : 5));
+        i++;
+    }
 }

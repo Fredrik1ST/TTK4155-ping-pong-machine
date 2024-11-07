@@ -81,3 +81,44 @@ void oled_printChar(char c, char font);
 * @param	font	Font number to use
 */
 void oled_print(const char* data, char font);
+
+/**
+ * @brief Stores Data in the buffer at a given position
+ * 
+ * @param page  Page of the display in the buffer to write on
+ * @param col   Column of the display in the buffer to write on
+ * @param data  Data to be stored in the buffer
+ */
+void oled_update_buffer(uint8_t page, uint8_t col, uint8_t data);
+
+/**
+ * @brief Writes the contents of the buffer on the display
+ * 
+ */
+void oled_push_buffer(void);
+
+/**
+ * @brief Writes the buffer full of zeroes
+ * 
+ */
+void oled_clear_buffer(void);
+
+/**
+ * @brief Writes a character into the buffer
+ * 
+ * @param c     The Character to be written
+ * @param font  The font the character should be in
+ * @param page  The page on the buffer
+ * @param col   The column of the buffer
+ */
+void oled_printCharToBuffer(char c, char font, uint8_t page, uint8_t col);
+
+/**
+ * @brief Writes a string to the Buffer. Automatically moves cursor.
+ * 
+ * @param data  The string to be written to the buffer
+ * @param font  The font to be used
+ * @param page  The starting page
+ * @param col   The starting column
+ */
+void oled_printToBuffer(const char* data, char font, uint8_t page, uint8_t col);

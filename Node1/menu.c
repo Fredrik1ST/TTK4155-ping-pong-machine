@@ -69,7 +69,7 @@ bool menu_moveCursor(int8_t direction){
 	menu_setCursor(index);
 }
 
-
+/*
 void menu_print(){
 	oled_home();
 	oled_print(menu.currentPage->name, 0);
@@ -89,4 +89,20 @@ void menu_print(){
 		
 		oled_pos(i+2, 0);	// newline
 	}
+}
+*/
+
+void menu_print() {
+    oled_clear_buffer();
+    oled_printToBuffer(menu.currentPage->name, 0, 0, 0);
+    
+    for (int i = 0; i <= menu.currentPage->totalSubMenu; i++) {
+        if (menu.cursor == i) {
+            oled_printToBuffer("-> ", 0, i + 1, 0); 
+        } else {
+            oled_printToBuffer("   ", 0, i + 1, 0); 
+        }
+        oled_printToBuffer(menu.currentPage->subMenu[i]->name, 0, i + 1, 3); 
+    }
+    oled_push_buffer();
 }
