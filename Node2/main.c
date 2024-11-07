@@ -6,6 +6,7 @@
 #include "pwm.h"
 #include "ir.h"
 #include "encoder.h"
+#include "solenoid.h"
 #include <stdio.h>
 
 #define txMailbox 0
@@ -21,8 +22,10 @@ int main(void) {
 	CanInit canCfg = (CanInit){.brp = 41, .phase1 = 6, .phase2 = 5, .propag = 1}; // Phase values from node 1 (plus one, according to datasheet)
 	can_init(canCfg, 0);
 	
-	pwm_init();
 	IR_init();
+	encoder_init();
+	solenoid_init();
+	pwm_init();
 
     while (1) {
 		
@@ -47,19 +50,30 @@ int main(void) {
 		// Decode gamepad data for motor control
 		int8_t gp_pos_x = (int8_t) msgIn.byte[0];
 		int8_t gp_pos_y = (int8_t) msgIn.byte[1];
+		uint8_t gp_btn = (uint8_t) msgIn.byte[2];
 		// y = (x - min) / (max - min) * (new_max - new_min) + new_min
 		int16_t servoPwmDutyCycle = -6*(gp_pos_x-29) + 1500;
 		//printf("%d %d \r\n\r\n", gp_pos_x, servoPwmDutyCycle);
-		pwm_setDutyCycle(servoPwmDutyCycle);
+		pwm_setDutyCycle_servo(servoPwmDutyCycle);
+		pwm_setSpeed_motor(gp_pos_x);
+		
+		//uint8_t prev_gp_btn = gp_btn;
+		//uint8_t rTrig_gp_btn = (gp_btn == 1 && prev_gp_btn == 0);
+		
+		if (gp_btn == 0){
+			solenoid_kick();
+		}else{
+			solenoid_retract();
+		}
+		
+		
+		printf("%01X\r\n", gp_btn);
 		
 		
 		// =================================================
 		// Read board inputs (IR, encoder)
-		//printf("%01X \r\n\r\n", getIR());
-		
-		Encoder e;
-		encoder_read(e);
-		printf("%d \r\n", e.pos);
+
+		//printf("%d\r\n", encoder_read());
 		
 	}
 }

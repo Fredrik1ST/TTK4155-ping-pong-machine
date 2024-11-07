@@ -2,6 +2,7 @@
  * @file pwm.h
  * @brief Pulse-width modulation
  * 
+ * @file pwm.h
  * Uses the PWM macrocell of the ATSAM to output PWM signals
  */
 
@@ -20,6 +21,14 @@ void pwm_init(void);
  *
  * @param dutyCycle_us The desired duty cycle in microseconds
  */
-void pwm_setDutyCycle (uint32_t dutyCycle_us);
+void pwm_setDutyCycle_servo (uint32_t dutyCycle_us);
+
+/**
+ * Sets a new motor speed as a percentage (+/- 100%)
+ *
+ * @param pct The desired speed
+ */
+void pwm_setSpeed_motor(int8_t pct);
+
 
 #endif /* PWM_H */

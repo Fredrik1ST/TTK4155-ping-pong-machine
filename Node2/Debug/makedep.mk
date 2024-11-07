@@ -18,6 +18,8 @@ main.c
 
 pwm.c
 
+solenoid.c
+
 time.c
 
 uart.c

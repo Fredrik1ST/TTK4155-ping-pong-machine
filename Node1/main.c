@@ -53,6 +53,7 @@ int main(void) {
 		if(gp.btn){
 			menu_selectPage();
 		}
+		menu_print();
 		prev_gp_dir = new_gp_dir;
 
 		

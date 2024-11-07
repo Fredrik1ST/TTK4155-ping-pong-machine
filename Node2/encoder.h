@@ -8,12 +8,8 @@
 
 void encoder_init();
 
-typedef struct {
-	int32_t	pos;
-} Encoder;
+uint32_t encoder_read();
 
-int32_t encoder_read(Encoder);
-
-void encoder_reset(Encoder);
+void encoder_reset();
 
 #endif /* ENCODER_H */
