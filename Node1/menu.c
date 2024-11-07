@@ -89,4 +89,5 @@ void menu_print(){
 		
 		oled_pos(i+2, 0);	// newline
 	}
+	_delay_ms(20);
 }
