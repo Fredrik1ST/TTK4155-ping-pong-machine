@@ -24,16 +24,19 @@ void menu_init(){
 	
 }
 
-void menu_func0(){
+void menu_func0(){ // TODO: Change this func to be a "Start Game" Menu entry - Start counting score & display it
 	printf("First menu selected\n");
-	oled_print("First menu selected", 0);
+	oled_clear_buffer();
+	oled_printToBuffer("First menu selected", 0);
+	oled_push_buffer();
 	_delay_ms(500);
 }
 
-void menu_func1(){
+void menu_func1(){ // TODO: Change this func to be a "HighScore(s)" Menu entry - Show the highest score, or a list of high scores if i cba. Need to implement that too.
 	printf("Second menu selected\n");
-	oled_reset();
-	oled_print("Second menu selected", 0);
+	oled_clear_buffer();
+	oled_printToBuffer("Second menu selected", 0);
+	oled_push_buffer();
 	_delay_ms(500);
 }
 
