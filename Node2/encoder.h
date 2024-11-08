@@ -2,6 +2,7 @@
  * @file encoder.h
  */
 
+#include <sam.h>
 
 #ifndef ENCODER_H
 #define ENCODER_H

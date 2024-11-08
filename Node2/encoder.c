@@ -3,11 +3,9 @@
 #include <stdio.h>
 
 void encoder_init(){
-	//REG_PMC_PCER0 |= PMC_PCER0_PID27;
-	//REG_PMC_PCER0 |= PMC_PCER0_PID28;
-	
+
 	//REG_PMC_PCER0 |= PMC_PCER0_PID29;	// Enable PWM clock for TC2 in Power Management Controller
-	REG_PMC_PCER1 |= PMC_PCER1_PID33; // TC6
+	REG_PMC_PCER1 |= PMC_PCER1_PID33; // Enable PWM clock for
 	
 	REG_TC2_WPMR |= ('T'<<24)|('I'<<16)|('M'<8); // Writes "TIM" as ASCII... why God, why.
 	REG_TC2_WPMR &= ~(0x1); // Disable first bit to allow writing
@@ -35,8 +33,9 @@ uint32_t encoder_read(){
 	uint32_t registerPos = REG_TC2_CV0;
 	uint32_t registerDir = (REG_TC2_QISR & (1 << 8));
 	
-	if (registerPos > 0xFFFFF){
+	if (registerPos > 0xFFFF){
 		encoder_reset();
+		registerPos = 0;
 	}
 
 	return registerPos;

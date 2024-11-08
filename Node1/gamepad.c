@@ -16,8 +16,7 @@ void gamepad_init(){
 	DDRB &= ~(0 << DDB2); // Set PB2 to 0 (input for joystick button)
 }
 
-Gamepad read_gamepad(){
-	Gamepad gp;
+Gamepad read_gamepad(Gamepad gp){
 	gp.pos_x = (int16_t)adc_read(CH_JOYSTICK_X);
 	gp.pos_y = (int16_t)adc_read(CH_JOYSTICK_Y);
 	gp.pos_left = (int16_t)adc_read(CH_SLIDER_LEFT);
@@ -32,13 +31,14 @@ Gamepad read_gamepad(){
 Gamepad calibrate_gamepad(Gamepad input){
 	Gamepad gp;
 	
-	gp.pos_x = (input.pos_x - 127) * 100 / 127; // Get direction as a percentage between -100 to +100
-	gp.pos_y = (input.pos_y - 127) * 100 / 127;
+	gp.pos_x = ((input.pos_x - 127) * 100 / 120) - gp.offset_x; // Get direction as a percentage between -100 to +100
+	if (gp.pos_x > 100){gp.pos_x = 100;} else if (gp.pos_x < -100){gp.pos_x = -100;}
+	gp.pos_y = ((input.pos_y - 127) * 100 / 120) - gp.offset_y;
+	if (gp.pos_y > 100){gp.pos_y = 100;} else if (gp.pos_y < -100){gp.pos_y = -100;}
 	gp.pos_left = (input.pos_left - 127) * 100 / 127;
 	gp.pos_right = (input.pos_right - 127) * 100 / 127;
 	
 	gp.btn = input.btn;
-	
 	
 	// printf("CAL X: %d    -    Y: %d    -    L: %d    -    R: %d\r\n\r\n", gp.pos_x, gp.pos_y, gp.pos_left, gp.pos_right);
 	
@@ -70,16 +70,17 @@ Dir getJoystickDir(Gamepad gp){
 	return direction;
 }
 
+/*
 Gamepad refresh_gamepad(){
-	Gamepad gp = read_gamepad();
+	Gamepad gp = read_gamepad(0,0);
 	gp = calibrate_gamepad(gp);
 	gp.joy_dir = getJoystickDir(gp);
 	return gp;
 }
+*/
 
 void print_gamepad(Gamepad gp){
 	// Print analog values
-	//printf("X: %02X    -    Y: %02X    -    L: %02X    -    R: %02X\r\n\r\n", gp.pos_x, gp.pos_y, gp.pos_left, gp.pos_right);
 	
 	switch(getJoystickDir(gp)){
 		case LEFT: printf("Joystick: LEFT");break;

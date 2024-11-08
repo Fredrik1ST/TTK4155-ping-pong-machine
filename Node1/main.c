@@ -31,11 +31,17 @@ int main(void) {
 	Dir new_gp_dir;
 	Dir prev_gp_dir;
 	
+	// Calibrate joysticks
+	gp = read_gamepad(gp);
+	gp = calibrate_gamepad(gp);
+	//gp.offset_x = gp.pos_x;
+	//gp.offset_y = gp.pos_y;
+	
 	while(1){
 		// =================================================
 		// Read gamepad inputs
 		
-		gp = read_gamepad();
+		gp = read_gamepad(gp);
 		gp = calibrate_gamepad(gp);
 		new_gp_dir = getJoystickDir(gp);
 		
