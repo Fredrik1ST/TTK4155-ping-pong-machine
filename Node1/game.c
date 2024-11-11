@@ -18,26 +18,26 @@ void scorecounter(int* Fails){
 }
 */
 
+#include <inttypes.h>
+#include "def.h"
+
 uint8_t highScores[2];
 
 void end_game() {
-    gameActive = 0;
-    if (score > highScores[0]) {
+    if (gScore > highScores[0]) {
         highScores[2] = highScores[1];
         highScores[1] = highScores[0];
-        highScores[0] = score;
+        highScores[0] = gScore;
         return;
     }
-    if (score > highScores[1]) {
+    if (gScore > highScores[1]) {
         highScores[2] = highScores[1];
-        highScores[1] = score;
+        highScores[1] = gScore;
         return;
     }
-    if (score > highScores[2]) {
-        highScores[2] = score;
+    if (gScore > highScores[2]) {
+        highScores[2] = gScore;
         return;
     }
-    score = 0;
+    gScore = 0;
 }
-
-;

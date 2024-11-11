@@ -13,6 +13,7 @@
 #define txMailbox 0
 #define rxMailbox 1
 
+float integral = 0; // Used by PI motor controller
 
 int main(void) {
 	WDT->WDT_MR = WDT_MR_WDDIS; // Disable watchdog timer
@@ -28,11 +29,6 @@ int main(void) {
 	encoder_init();
 	solenoid_init();
 	pwm_init();
-	
-	PID_controller PID;
-	PID.integral = 0;
-	PID.prev_e = 0;
-	PID.prev_t = time_now();
 
     while (1) {
 		
@@ -42,7 +38,7 @@ int main(void) {
 		CanMsg msgOut;
 		msgOut.id = 0xB5;
 		msgOut.length = 0x2;
-		msgOut.dword[0] = 0xAABB;
+		msgOut.dword[0] = getIR();
 		can_tx(msgOut);
 		//printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %02X %02X \r\n\r\n", msgOut.id, msgOut.length, msgOut.byte[0], msgOut.byte[1]);
 		
@@ -52,25 +48,27 @@ int main(void) {
 			//printf("Recv: ID: %02X    -    Len: %02X    -    Dat: %02X %02X %01X %01X \r\n\r\n", msgIn.id, msgIn.length, msgIn.byte[0], msgIn.byte[1], msgIn.byte[2], msgIn.byte[3]);
 		}
 		
-		
-		// =================================================
-		// Decode gamepad data for motor control
+		// Decode CAN message
 		int8_t gp_pos_x = (int8_t) msgIn.byte[0];
 		int8_t gp_pos_y = (int8_t) msgIn.byte[1];
-		uint8_t gp_btn = (uint8_t) msgIn.byte[2];
-		//printf("%d %d \r\n\r\n", gp_pos_x, servoPwmDutyCycle);
-		if (gp_pos_y > 50){
-			pwm_setDutyCycle_servo(-6*(gp_pos_x-29) + 1500);
-		}else{
-			pwm_setDutyCycle_servo(1500); // Center
-		}
+		uint8_t gp_btn = msgIn.byte[2] & (1 << 0);
+		#define GAME_ACTIVE  ((msgIn.byte[3] & (1 << 0)) != 0)
 		
-		PID = motorController_run(gp_pos_x, PID);
 		
-		if (gp_btn == 0){
-			solenoid_kick();
-		}else{
-			solenoid_retract();
+		if GAME_ACTIVE {
+			if (gp_pos_y > 50){
+				pwm_setDutyCycle_servo(-6*(gp_pos_x-29) + 1500);
+			}else{
+				pwm_setDutyCycle_servo(1500); // Center
+			}
+		
+			integral = motorController_run(gp_pos_x, integral);
+		
+			if (gp_btn == 0){
+				solenoid_kick();
+			}else{
+				solenoid_retract();
+			}
 		}
 	
 		//printf("%01X\r\n", gp_btn);

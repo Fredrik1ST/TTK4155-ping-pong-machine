@@ -21,7 +21,7 @@ struct Page{
 	int8_t totalSubMenu;
 	char name[25]; // Display text
 	void (*run)(void);  // run when menu is selected
-
+	int8_t id;
 };
 
 
@@ -80,6 +80,8 @@ void menu_init();
 
 void menu_print();
 
+void menu_run();
 
+uint8_t menu_is_highscore();
 
 #endif /* MENU_H */

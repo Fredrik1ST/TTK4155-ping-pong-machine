@@ -154,6 +154,12 @@
     <Compile Include="fonts.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="game.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="game.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="gamepad.c">
       <SubType>compile</SubType>
     </Compile>

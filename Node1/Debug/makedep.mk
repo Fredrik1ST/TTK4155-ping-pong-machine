@@ -6,6 +6,8 @@ adc.c
 
 can.c
 
+game.c
+
 gamepad.c
 
 main.c

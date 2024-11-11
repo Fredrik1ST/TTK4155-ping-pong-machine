@@ -1,11 +1,14 @@
 #include "menu.h"
 #include "oled.h"
+#include "def.h"
 #include <inttypes.h>
 #include <stdbool.h>
 #include <util/delay.h>
+#include <string.h>
 
 void menu_init(){
 	strcpy(menu.root.name, "Ping Pong Simulator 3000");
+	menu.root.run = menu_print;
 	menu.root.totalSubMenu = 2;
 	menu.currentPage = &menu.root;
 	
@@ -18,57 +21,70 @@ void menu_init(){
 	strcpy(menu.subMenu2.name, "HighScores");
 	menu.subMenu2.run = menu_func1;
 	menu.subMenu2.totalSubMenu = 0;
+	menu.subMenu2.id = 1;
 	menu.root.subMenu[1] = &menu.subMenu2;
+	
 	
 	menu.cursor = 0;
 	
 }
 
-void oled_print(const char *message, uint8_t line); // Assuming this is the OLED print function prototype
+//void oled_print(const char *message, uint8_t line); // Assuming this is the OLED print function prototype
 
 void menu_func0() { // Play Game function
     printf("First menu selected\n");
+	oled_pos(0, 0);
     oled_print("     Game in progress", 0);
 
-    if (!gameActive) {
-        gameActive = true; // Start the game
-        score = 0; // Reset the score for the new game
+    if (!DEF_GAME_ACTIVE) {
+        DEF_START_GAME; // Start the game
     }
     
     char score_str[16];
-    snprintf(score_str, sizeof(score_str), "Score: %u", score);
-    oled_print(score_str, 1);
+    snprintf(score_str, sizeof(score_str), "Score: %u", gScore);
+	oled_pos(1, 0);
+    oled_print(score_str, 0);
 
 }
 
 void menu_func1() { // Show High Scores function
-	char highscoreStr[10]
-    printf("Second menu selected\n");
+    printf("Second menu selected\r\n");
+	char highScoreStr[10];
     oled_reset();
-    oled_print("HighScores - Click to go back", 0);
-	oled_print(sprint(highscoreStr, %u, highscores[0]), 1);
-	oled_print(sprint(highscoreStr, %u, highscores[1]), 2);
-	oled_print(sprint(highscoreStr, %u, highscores[2]), 3);
+	oled_pos(0,0);
+    oled_print("HighScores", 0);
+	oled_pos(1,0);
+	snprintf(highScoreStr, sizeof(highScoreStr), "%u", gHighScores[0]);
+	oled_print(highScoreStr, 0);
+	oled_pos(2,0);
+	snprintf(highScoreStr, sizeof(highScoreStr), "%u", gHighScores[1]);
+	oled_print(highScoreStr, 0);
+	oled_pos(3,0);
+	snprintf(highScoreStr, sizeof(highScoreStr), "%u", gHighScores[2]);
+	oled_print(highScoreStr, 0);
 
     // Display the high scores on the OLED
     for (int i = 0; i < 3; i++) {
         char score_display[16];
-        snprintf(score_display, sizeof(score_display), "%d: %u", i + 1, highScores[i]);
+        snprintf(score_display, sizeof(score_display), "%d: %u", i + 1, gHighScores[i]);
         oled_print(score_display, i + 1);
     }
 }
 
 bool menu_move_back(){
-	if (menu.currentPage->parentMenu == NULL){
-		return 0;	// Already in main menu (root) do nothing
-	}
-	menu.currentPage = menu.currentPage->parentMenu;	// Select parent menu of the current page.
+	//if (menu.currentPage->parentMenu == NULL){
+		//return 0;	// Already in main menu (root) do nothing
+	//}
+	menu.currentPage = &menu.root;	// Select parent menu of the current page.
 	return 1;
 }
 
 
 void menu_selectPage(){
-	menu.currentPage->subMenu[menu.cursor]->run();  // run the function for the selected page
+	if(menu.currentPage->totalSubMenu != 0){ // Endrer kun page hvis current page har sub pages
+		menu.currentPage = menu.currentPage->subMenu[menu.cursor];
+	}
+	//menu.currentPage->subMenu[menu.cursor]->run();  // run the function for the selected page
 }
 
 
@@ -110,4 +126,15 @@ void menu_print(){
 		
 		oled_pos(i+2, 0);	// newline
 	}
+}
+
+void menu_run(){
+	menu.currentPage->run();
+}
+
+uint8_t menu_is_highscore(){
+	if (menu.currentPage->id == 1){
+		return 1;
+	}
+	return 0;
 }

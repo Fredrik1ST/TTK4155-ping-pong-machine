@@ -42,7 +42,6 @@ C_SRCS +=  \
 ../Device_Startup/startup_sam3xa.c \
 ../Device_Startup/system_sam3xa.c \
 ../encoder.c \
-../game.c \
 ../ir.c \
 ../main.c \
 ../motorController.c \
@@ -63,7 +62,6 @@ can.o \
 Device_Startup/startup_sam3xa.o \
 Device_Startup/system_sam3xa.o \
 encoder.o \
-game.o \
 ir.o \
 main.o \
 motorController.o \
@@ -77,7 +75,6 @@ can.o \
 Device_Startup/startup_sam3xa.o \
 Device_Startup/system_sam3xa.o \
 encoder.o \
-game.o \
 ir.o \
 main.o \
 motorController.o \
@@ -91,7 +88,6 @@ can.d \
 Device_Startup/startup_sam3xa.d \
 Device_Startup/system_sam3xa.d \
 encoder.d \
-game.d \
 ir.d \
 main.d \
 motorController.d \
@@ -105,7 +101,6 @@ can.d \
 Device_Startup/startup_sam3xa.d \
 Device_Startup/system_sam3xa.d \
 encoder.d \
-game.d \
 ir.d \
 main.d \
 motorController.d \
@@ -154,13 +149,6 @@ Device_Startup/system_sam3xa.o: ../Device_Startup/system_sam3xa.c
 	
 
 ./encoder.o: .././encoder.c
-	@echo Building file: $<
-	@echo Invoking: ARM/GNU C Compiler : 6.3.1
-	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAM3X8E__ -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\ARM\CMSIS\5.4.0\CMSIS\Core\Include" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\Atmel\SAM3X_DFP\1.0.50\include"  -Og -ffunction-sections -mlong-calls -g3 -Wall -mcpu=cortex-m3 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
-	@echo Finished building: $<
-	
-
-./game.o: .././game.c
 	@echo Building file: $<
 	@echo Invoking: ARM/GNU C Compiler : 6.3.1
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\arm\arm-gnu-toolchain\bin\arm-none-eabi-gcc.exe$(QUOTE)  -x c -mthumb -D__SAM3X8E__ -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\ARM\CMSIS\5.4.0\CMSIS\Core\Include" -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\Atmel\SAM3X_DFP\1.0.50\include"  -Og -ffunction-sections -mlong-calls -g3 -Wall -mcpu=cortex-m3 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

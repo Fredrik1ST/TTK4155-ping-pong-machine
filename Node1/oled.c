@@ -127,7 +127,7 @@ void oled_printChar(char c, char font){
 void oled_print(const char* data, char font){
 	// Select font (from fonts.h)
 	char f = 5; // Default font (5x8 NORMAL)
-	if (f == 4 || f == 8){ // Selected fonts 4x8 SMALL or 8x8 LARGE
+	if (font == 4 || font == 8){ // Selected fonts 4x8 SMALL or 8x8 LARGE
 		f = font;
 	}
 	

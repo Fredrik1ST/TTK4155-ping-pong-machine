@@ -6,6 +6,16 @@
 #ifndef DEF_H
 #define DEF_H
 
+#include <inttypes.h>
+
+// Global game variables
+uint8_t gScore;
+uint8_t gHighScores[2];
+uint8_t gMem;
+#define DEF_START_GAME gMem |= (1 << 0)
+#define DEF_STOP_GAME gMem &= ~(1 << 0)
+#define DEF_GAME_ACTIVE ((gMem & (1 << 0)) != 0)
+
 // Times
 #define F_CPU 4915200								// Set clock frequency to 4,9MHz
 #define DEF_BAUD 9600

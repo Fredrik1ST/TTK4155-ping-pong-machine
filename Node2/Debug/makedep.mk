@@ -10,8 +10,6 @@ Device_Startup\system_sam3xa.c
 
 encoder.c
 
-game.c
-
 ir.c
 
 main.c
