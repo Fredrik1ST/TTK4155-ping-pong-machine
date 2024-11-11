@@ -16,6 +16,8 @@ ir.c
 
 main.c
 
+motorController.c
+
 pwm.c
 
 solenoid.c

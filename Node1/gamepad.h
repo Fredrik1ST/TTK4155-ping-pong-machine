@@ -30,6 +30,10 @@ typedef struct {
 	int16_t pos_y; // Joystick vertical
 	int16_t pos_left; // Left slider
 	int16_t pos_right; // Right slider
+	
+	int16_t offset_x;
+	int16_t offset_y;
+	
 	uint8_t btn;
 	Dir joy_dir;
 } Gamepad;
@@ -45,7 +49,7 @@ void gamepad_init();
  * Reads all gamepad inputs
  * @returns A Gamepad struct containing (uncalibrated) joystick & slider positions
  */
-Gamepad read_gamepad();
+Gamepad read_gamepad(Gamepad gp);
 
 
 /**

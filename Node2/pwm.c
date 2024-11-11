@@ -19,7 +19,7 @@ void pwm_init(void){
 	// ===================================================================
 	// Traversal motor
 	REG_PWM_CMR0 = PWM_CMR_CALG | PWM_CMR_CPOL | PWM_CMR_CPRE_CLKB;
-	REG_PWM_CPRD0 = 2000; // 2000/1Mhz = 2ms ts = 500Hz
+	REG_PWM_CPRD0 = 100; // 100/1Mhz = 100us ts = 10kHz
 	REG_PWM_CDTY0 = 0; // Default duty cycle
 	REG_PWM_ENA = PWM_ENA_CHID0;
 	
@@ -40,11 +40,9 @@ void pwm_init(void){
 	REG_PWM_CDTY1 = 1500;		// Default waveform duty cycle = 1.5ms (middle)
 	REG_PWM_ENA = PWM_ENA_CHID1;
 	
-	
-	
 }
 
-void(pwm_setDutyCycle_servo)(uint32_t dutyCycle_us){
+void pwm_setDutyCycle_servo(uint32_t dutyCycle_us){
 	uint32_t minVal = 900;		//0.9ms
 	uint32_t maxVal = 2100;		//2.1ms
 	uint32_t output = dutyCycle_us;
@@ -57,12 +55,11 @@ void(pwm_setDutyCycle_servo)(uint32_t dutyCycle_us){
 	REG_PWM_CDTY1 = output;
 }
 
-void(pwm_setSpeed_motor)(int8_t joystick){
+void pwm_setSpeed_motor(int8_t pct){
 	
-	printf("Motorspeed    %d    %d", joystick, REG_PWM_CDTY0);
-	REG_PWM_CDTY0 = ((uint32_t) abs(joystick)) * (2000) / (100);
+	REG_PWM_CDTY0 = (uint32_t) abs(pct);
 	
-	if (joystick > 0){
+	if (pct > 0){
 		REG_PIOC_SODR |= (1 << PIN_MOTOR_DIR);
 	}else{
 		REG_PIOC_CODR |= (1 << PIN_MOTOR_DIR);
