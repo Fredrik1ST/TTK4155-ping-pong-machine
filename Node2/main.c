@@ -13,7 +13,6 @@
 #define txMailbox 0
 #define rxMailbox 1
 
-float integral = 0; // Used by PI motor controller
 
 int main(void) {
 	WDT->WDT_MR = WDT_MR_WDDIS; // Disable watchdog timer
@@ -29,6 +28,11 @@ int main(void) {
 	encoder_init();
 	solenoid_init();
 	pwm_init();
+	
+	PID_controller PID;
+	PID.integral = 0;
+	PID.prev_e = 0;
+	PID.prev_t = time_now();
 
     while (1) {
 		
@@ -61,7 +65,7 @@ int main(void) {
 			pwm_setDutyCycle_servo(1500); // Center
 		}
 		
-		integral = motorController_run(gp_pos_x, integral);
+		PID = motorController_run(gp_pos_x, PID);
 		
 		if (gp_btn == 0){
 			solenoid_kick();
