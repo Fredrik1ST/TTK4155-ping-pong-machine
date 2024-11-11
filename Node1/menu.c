@@ -5,17 +5,17 @@
 #include <util/delay.h>
 
 void menu_init(){
-	strcpy(menu.root.name, "Main Menu");
+	strcpy(menu.root.name, "Ping Pong Simulator 3000");
 	menu.root.totalSubMenu = 2;
 	menu.currentPage = &menu.root;
 	
-	strcpy(menu.subMenu1.name, "Sub menu 1");
+	strcpy(menu.subMenu1.name, "Play Game");
 	menu.subMenu1.run = menu_func0;
 	menu.subMenu1.totalSubMenu = 0;
 	menu.root.subMenu[0] = &menu.subMenu1;
 	
 	
-	strcpy(menu.subMenu2.name, "Sub menu 2");
+	strcpy(menu.subMenu2.name, "HighScores");
 	menu.subMenu2.run = menu_func1;
 	menu.subMenu2.totalSubMenu = 0;
 	menu.root.subMenu[1] = &menu.subMenu2;
@@ -24,15 +24,38 @@ void menu_init(){
 	
 }
 
-void menu_func0(){
-	printf("First menu selected\n");
-	oled_print("First menu selected", 0);
+void oled_print(const char *message, uint8_t line); // Assuming this is the OLED print function prototype
+
+void menu_func0() { // Play Game function
+    printf("First menu selected\n");
+    oled_print("     Game in progress", 0);
+
+    if (!gameActive) {
+        gameActive = true; // Start the game
+        score = 0; // Reset the score for the new game
+    }
+    
+    char score_str[16];
+    snprintf(score_str, sizeof(score_str), "Score: %u", score);
+    oled_print(score_str, 1);
+
 }
 
-void menu_func1(){
-	printf("Second menu selected\n");
-	oled_reset();
-	oled_print("Second menu selected", 0);
+void menu_func1() { // Show High Scores function
+	char highscoreStr[10]
+    printf("Second menu selected\n");
+    oled_reset();
+    oled_print("HighScores - Click to go back", 0);
+	oled_print(sprint(highscoreStr, %u, highscores[0]), 1);
+	oled_print(sprint(highscoreStr, %u, highscores[1]), 2);
+	oled_print(sprint(highscoreStr, %u, highscores[2]), 3);
+
+    // Display the high scores on the OLED
+    for (int i = 0; i < 3; i++) {
+        char score_display[16];
+        snprintf(score_display, sizeof(score_display), "%d: %u", i + 1, highScores[i]);
+        oled_print(score_display, i + 1);
+    }
 }
 
 bool menu_move_back(){
