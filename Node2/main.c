@@ -37,10 +37,10 @@ int main(void) {
 
 		CanMsg msgOut;
 		msgOut.id = 0xB5;
-		msgOut.length = 0x2;
+		msgOut.length = 0x1;
 		msgOut.dword[0] = getIR();
 		can_tx(msgOut);
-		//printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %02X %02X \r\n\r\n", msgOut.id, msgOut.length, msgOut.byte[0], msgOut.byte[1]);
+		printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %02X\r\n\r\n", msgOut.id, msgOut.length, msgOut.dword[0]);
 		
 		CanMsg msgIn;
 		if(CAN0->CAN_MB[rxMailbox].CAN_MSR & CAN_MSR_MRDY){

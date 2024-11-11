@@ -15,5 +15,5 @@ void IR_init(void){
 }
 
 uint8_t getIR(){
-	return (REG_PIOA_PDSR & (1 << PIN_NR)) >> PIN_NR;
+	return (~REG_PIOA_PDSR & (1 << PIN_NR)) >> PIN_NR;
 }

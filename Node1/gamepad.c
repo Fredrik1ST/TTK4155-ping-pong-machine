@@ -31,9 +31,9 @@ Gamepad read_gamepad(Gamepad gp){
 Gamepad calibrate_gamepad(Gamepad input){
 	Gamepad gp;
 	
-	gp.pos_x = ((input.pos_x - 127) * 100 / 120) - gp.offset_x; // Get direction as a percentage between -100 to +100
+	gp.pos_x = ((input.pos_x - 127) * 100 / 127) - gp.offset_x; // Get direction as a percentage between -100 to +100
 	if (gp.pos_x > 100){gp.pos_x = 100;} else if (gp.pos_x < -100){gp.pos_x = -100;}
-	gp.pos_y = ((input.pos_y - 127) * 100 / 120) - gp.offset_y;
+	gp.pos_y = ((input.pos_y - 127) * 100 / 127) - gp.offset_y;
 	if (gp.pos_y > 100){gp.pos_y = 100;} else if (gp.pos_y < -100){gp.pos_y = -100;}
 	gp.pos_left = (input.pos_left - 127) * 100 / 127;
 	gp.pos_right = (input.pos_right - 127) * 100 / 127;

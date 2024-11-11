@@ -35,7 +35,7 @@ float motorController_run(int8_t joystick_pos, float integral){
 			u = -100;
 		}
 		
-		printf("Enc: %.1f    Joy: %d    Err: %.2f    u: %.2f    i: %.2f\r\n\r\n", encoder_data_scaled, -joystick_pos, posError, u, integral);
+		//printf("Enc: %.1f    Joy: %d    Err: %.2f    u: %.2f    i: %.2f\r\n\r\n", encoder_data_scaled, -joystick_pos, posError, u, integral);
 		
 		pwm_setSpeed_motor((int8_t)-u);
 		

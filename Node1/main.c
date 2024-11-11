@@ -25,7 +25,6 @@ int main(void) {
 	oled_init();
 	oled_reset();
 	menu_init();
-
 	can_init();
 	
 	Gamepad gp;
@@ -41,6 +40,8 @@ int main(void) {
 	uint32_t clk = 0;
 	uint32_t prevClk = 0;
 	uint8_t ballDetected = 0;
+	
+	printf("Init complete");
 	
 	while(1){
 		// =================================================
@@ -111,7 +112,7 @@ int main(void) {
 			
 			if (ballDetected != 0) {
 				end_game();
-				DEF_STOP_GAME;
+				gScore = 0;
 				menu_move_back();
 			}
 		}

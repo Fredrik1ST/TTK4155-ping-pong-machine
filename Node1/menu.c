@@ -1,6 +1,7 @@
 #include "menu.h"
 #include "oled.h"
 #include "def.h"
+#include "game.h"
 #include <inttypes.h>
 #include <stdbool.h>
 #include <util/delay.h>
@@ -32,7 +33,7 @@ void menu_init(){
 //void oled_print(const char *message, uint8_t line); // Assuming this is the OLED print function prototype
 
 void menu_func0() { // Play Game function
-    printf("First menu selected\n");
+    //printf("First menu selected\n");
 	oled_pos(0, 0);
     oled_print("     Game in progress", 0);
 
@@ -48,7 +49,7 @@ void menu_func0() { // Play Game function
 }
 
 void menu_func1() { // Show High Scores function
-    printf("Second menu selected\r\n");
+    //printf("Second menu selected\r\n");
 	char highScoreStr[10];
     oled_reset();
 	oled_pos(0,0);
@@ -64,11 +65,13 @@ void menu_func1() { // Show High Scores function
 	oled_print(highScoreStr, 0);
 
     // Display the high scores on the OLED
+	/*
     for (int i = 0; i < 3; i++) {
         char score_display[16];
         snprintf(score_display, sizeof(score_display), "%d: %u", i + 1, gHighScores[i]);
         oled_print(score_display, i + 1);
     }
+	*/
 }
 
 bool menu_move_back(){
