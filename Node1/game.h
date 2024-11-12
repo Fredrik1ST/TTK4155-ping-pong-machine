@@ -1,5 +1,9 @@
+/**
+ * @file game.h
+ * @brief Functions for the game logic
+ */
 
-
-void end_game();
-;
-//void scorecounter(int*Fails)
+/**
+ * @brief Updates the highscore list
+ */
+void update_highscore();

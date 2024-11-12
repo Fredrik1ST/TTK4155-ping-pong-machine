@@ -1,23 +1,23 @@
 #include "mcp2515.h"
 #include "can.h"
 
-/*
-* Initialize CAN Bus controller via SPI, in normal mode
+/**
+* @brief Initialize CAN Bus controller via SPI, in normal mode
 */
 void can_init(void){
 	mcp2515_init();
 }
 
-/*
-* Initialize CAN Bus controller via SPI, in loopback mode (for testing)
+/**
+* @brief Initialize CAN Bus controller via SPI, in loopback mode (for testing)
 */
 void can_init_loopback(void){
 	mcp2515_init_loopback();
 }
 
 
-/*
-* Receive a CAN message via MCP2515
+/**
+* @brief Receive a CAN message via MCP2515
 * @param	msg		Received CAN Message
 */
 void can_recv(CanMsg* msg){
@@ -31,8 +31,8 @@ void can_recv(CanMsg* msg){
 }
 
 
-/*
-* Send a CAN message via MCP2515
+/**
+* @brief Send a CAN message via MCP2515
 * @param	msg		CAN message to send
 */
 void can_send(CanMsg* msg){

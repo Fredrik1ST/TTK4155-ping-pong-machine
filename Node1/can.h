@@ -36,8 +36,8 @@ typedef struct{
 	uint8_t data[8];
 } CanMsg;
 
-/*
-* Initialize CAN controller via SPI
+/**
+* @brief Initialize CAN controller via SPI
 */
 void can_init(void);
 void can_init_loopback(void);

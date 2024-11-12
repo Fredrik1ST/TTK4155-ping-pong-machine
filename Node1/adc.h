@@ -12,7 +12,7 @@
 #include "def.h"
 
 /**
- * Initialize the Analog-Digital-Converter (ADC)
+ * @brief Initialize the Analog-Digital-Converter (ADC)
  * 
  * Use hardware counter 3 (special function of pin PD4) to generate a PWM signal that acts as the ADC's clock
  */

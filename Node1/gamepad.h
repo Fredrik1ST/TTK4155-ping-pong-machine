@@ -1,4 +1,4 @@
-/*
+/**
 * @file gamepad.h
 * @brief Gamepad with joystick, sliders and button inputs
 */

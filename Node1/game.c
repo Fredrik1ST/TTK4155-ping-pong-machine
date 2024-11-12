@@ -1,7 +1,7 @@
 #include <inttypes.h>
 #include "def.h"
 
-void end_game() {
+void update_highscore() {
     if (gScore > gHighScores[0]) {
         gHighScores[2] = gHighScores[1];
         gHighScores[1] = gHighScores[0];
@@ -17,6 +17,4 @@ void end_game() {
         gHighScores[2] = gScore;
         return;
     }
-    gScore = 0;
-	DEF_STOP_GAME;
 }

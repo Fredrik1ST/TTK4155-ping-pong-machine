@@ -1,4 +1,4 @@
-/*
+/**
 * @file menu.h
 * @brief Menu structures with traversal functions
 */
@@ -26,7 +26,7 @@ struct Page{
 
 
 /**
- * Move current menu to parent menu
+ * @brief current menu to parent menu
  *
  * @return 0 if current menu is root.
  */
@@ -34,26 +34,26 @@ bool menu_moveBack();
 
 
 /**
- * Select a Page based  on cursor position
+ * @brief Select a Page based  on cursor position
  */
 void menu_selectPage();
 
 
 /**
- * Move cursor to a specific index
+ * @brief Move cursor to a specific index
  */
 bool menu_setCursor(int8_t index);
 
 
 /**
- * Move cursor
+ * @brief Move cursor
  * @param typically -1 or 1 for up and down
  */
 bool menu_moveCursor(int8_t direction);
 
 
 /**
- * Test page function for page0 and page1
+ * @brief Test page function for page0 and page1
  */
 void menu_func0();
 
@@ -61,7 +61,7 @@ void menu_func1();
 
 
 /**  
- *	Stores all menus 
+ * @brief Stores all menus 
  */
 struct struct_Menu{
 	struct Page* currentPage;
@@ -76,12 +76,28 @@ struct struct_Menu{
 } menu;
 
 
+/**
+ * @brief Initialize menu
+ */
 void menu_init();
 
+
+/**
+ * @brief Print menu to OLED
+ */
 void menu_print();
 
+
+/**
+ * @brief Run functions of currently selected menu
+ */
 void menu_run();
 
+
+/**
+ * @brief Check if the current menu is displayng highscore
+ * @return 1 if the current menu is displaying highscore
+ */
 uint8_t menu_is_highscore();
 
 #endif /* MENU_H */

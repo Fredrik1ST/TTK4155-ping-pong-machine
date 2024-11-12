@@ -1,4 +1,4 @@
-/*
+/**
 * @file uart.h
 * @brief Handling of UART communications with onboard components
 */
@@ -10,7 +10,7 @@
 
 
 /**
- * Initializes the UART communication interface.
+ * @brief Initialize the UART communication interface.
  *
  * This function sets the baud rate for UART transmission and configures the UART
  * control registers to enable the transmitter and receiver. The data frame size
@@ -20,7 +20,7 @@ void UART_init(unsigned int ubbr);
 
 
 /**
- * Receives a single byte of data via UART.
+ * @brief Receives a single byte of data via UART.
  *
  * This function waits until data is available in the UART data register, and
  * then returns the received byte.
@@ -31,7 +31,7 @@ int UART_receive(FILE * file);
 
 
 /**
- * Transmits a single byte of data via UART.
+ * @brief Transmits a single byte of data via UART.
  *
  * This function waits until the UART data register is empty, and then transmits
  * the given data byte through the UART.

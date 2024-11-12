@@ -30,18 +30,14 @@ int main(void) {
 	Gamepad gp;
 	Dir new_gp_dir;
 	Dir prev_gp_dir;
-	
-	// Calibrate joysticks
 	gp = read_gamepad(gp);
 	gp = calibrate_gamepad(gp);
-	//gp.offset_x = gp.pos_x;
-	//gp.offset_y = gp.pos_y;
 	
 	uint32_t clk = 0;
 	uint32_t prevClk = 0;
 	uint8_t ballDetected = 0;
 	
-	printf("Init complete");
+	printf("Init OK");
 	
 	while(1){
 		// =================================================
@@ -92,6 +88,7 @@ int main(void) {
 		can_send(&msgOut);
 		printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %02X %02X %01X %01X \r\n\r\n", msgOut.id, msgOut.len, msgOut.data[0], msgOut.data[1], msgOut.data[2], msgOut.data[3]);
 
+		// Read incoming CAN message when interrupt flag is set
 		if (mcp2515_read(MCP_CANINTF)&(0x01)){
 			CanMsg msgIn;
 			can_recv(&msgIn);
@@ -102,18 +99,19 @@ int main(void) {
 	
 		// =================================================
 		// Game logic - Increment score until ball is detected by IR (NB! Game is started by menu function)
-		if DEF_GAME_ACTIVE{
-			// Increase score based on time
+		if (DEF_GAME_ACTIVE){
+			// Score
 			clk++;
 			if ((clk > prevClk + 10)|(clk < prevClk)){
 				gScore++;
 				prevClk = clk;
 			}
-			
+			// Game over
 			if (ballDetected != 0) {
-				end_game();
+				update_highscore();
 				gScore = 0;
 				menu_move_back();
+				DEF_STOP_GAME;
 			}
 		}
 	
