@@ -1,3 +1,6 @@
+#ifndef IR_H
+#define IR_H
+
 #include <sam.h>
 
 /**
@@ -11,3 +14,5 @@ void IR_init(void);
  * @return int 
  */
 uint8_t getIR(void);
+
+#endif /* IR_H */
