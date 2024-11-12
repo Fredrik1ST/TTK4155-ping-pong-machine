@@ -50,3 +50,8 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+#Atmel Studio files and folders
+*.atsuo
+Debug/
+Release/
