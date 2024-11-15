@@ -12,9 +12,9 @@
 #define BRP 0x3					// Baud Rate Prescaling (3+1 => TQ = 500ns)
 #define TQ 0x2 * (BRP + 0x1) / MCP2515_F_CPU	// Time Quanta = Time between each bit
 #define PROPSEG 0x01			// PROPSEG*TQ = Time compensation for delay between CAN nodes (see fig. 5-2)
-#define PS1 0x06				// Propagation segment 1 = (PS1+1)*TQ = Positive time compensation for edge phase errors 
-#define PS2 0x05				// Propagation segment 2 = (PS2+1*TQ) = Negative time compensation for edge phase errors
-
+#define PS1 0x06				// Propagation segment 1 = (PS1+1)*TQ => Positive time compensation for edge phase errors 
+#define PS2 0x05				// Propagation segment 2 = (PS2+1*TQ) => Negative time compensation for edge phase errors
+#define BTL 0x01				// BTLMode = 1 => Allows PS2 to be set in CNF3
 
 void mcp2515_init(){
 	spi_init();
@@ -29,21 +29,14 @@ void mcp2515_init(){
 	}else{
 	printf("MCP2515 entered config mode\r\n");
 	}
-	
-	//mcp2515_write(MCP_CNF1, BRP); // Config CNF1, SJW = 1, BRP (Baud Rate Prescaling) = 3+1
-	
-	//mcp2515_write(MCP_CNF2, ((PS1 << 3) | PROPSEG)); //Config CNF2, PS1 = 7+1, PropSeg = 1+1
-	
-	//mcp2515_write(MCP_CNF3, (PS2 | BTLMODE)); // Write to CNF3: PS2 = 6+1, BTLMode ON (muy importante)
 
 	// Configure bit timing
-	mcp2515_write(MCP_CNF1, 0x03);	// BRP (Baud Rate Prescaling) = 3+1
-	mcp2515_write(MCP_CNF2, 0xB1);	// Propagation Segment PS = 1+1, PS1 = 7+1
-	mcp2515_write(MCP_CNF3, 0x85);	// PS2 = 5+1, BTLMode ON (muy importante)
+	mcp2515_write(MCP_CNF1, (BRP << 0)); // = 11 | BRP (Baud Rate Prescaling) = 3+1
+	mcp2515_write(MCP_CNF2, (BTL << 7)|(PS1 << 3)|(PROPSEG << 0)); // = 1 0 110 001 | PropSeg = 1+1, PS1 = 6+1, BTLmode ON
+	mcp2515_write(MCP_CNF3, (PS2 << 0)); // = 101 | PS2 = 5+1
 
 	mcp2515_bit_modify(MCP_CANINTE, 0b00000001, 0); // Enable interrupt bit when Receive Buffer 0 has new data
 	mcp2515_bit_modify(MCP_CANINTF, 0b00000001, 0); // Reset interrupt bit in buffer 0 (must be done to receive next 8 bits)
-	
 
 	mcp2515_write(MCP_CANCTRL, MODE_NORMAL); // Enter normal mode
 	mode = mcp2515_read(MCP_CANSTAT);
@@ -99,13 +92,6 @@ void mcp2515_write(uint8_t adr, uint8_t data){
 }
 
 
-void mcp2515_request_to_send(uint8_t buffer){
-	DEF_CAN_CS_ON;
-	spi_send(buffer);
-	DEF_CAN_CS_OFF;
-}
-
-
 void mcp2515_bit_modify(uint8_t adr, uint8_t mask, uint8_t data){
 	DEF_CAN_CS_ON;
 	spi_send(MCP_BITMOD); 
@@ -121,41 +107,4 @@ void mcp2515_reset(){
 	spi_send(MCP_RESET);
 	DEF_CAN_CS_OFF;
 	_delay_ms(10);
-}
-
-
-uint8_t mcp2515_read_status()
-{
-	DEF_CAN_CS_ON;
-	spi_send(MCP_READ_STATUS);
-	uint8_t status = spi_recv();
-	DEF_CAN_CS_OFF;
-	return status;
-}
-
-
-uint8_t mcp2515_rx_status(){
-	DEF_CAN_CS_ON;
-	spi_send(MCP_RX_STATUS);
-	uint8_t status = spi_recv();
-	DEF_CAN_CS_OFF;
-	return status;
-}
-
-
-uint8_t mcp_read_rx0_buffer(){
-	uint8_t result;
-	DEF_CAN_CS_ON;
-	spi_send(MCP_READ_RX0);
-	result = spi_recv();
-	DEF_CAN_CS_OFF;
-	return result;
-}
-
-
-void mcp_write_tx0_buffer(uint8_t data){
-	DEF_CAN_CS_ON;
-	spi_send(MCP_LOAD_TX0);
-	spi_send(data);
-	DEF_CAN_CS_OFF;
 }
