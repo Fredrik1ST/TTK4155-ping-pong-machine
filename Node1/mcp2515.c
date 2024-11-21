@@ -108,3 +108,9 @@ void mcp2515_reset(){
 	DEF_CAN_CS_OFF;
 	_delay_ms(10);
 }
+
+void mcp2515_request_to_send(uint8_t buffer){
+	DEF_CAN_CS_ON;
+	spi_send(buffer);
+	DEF_CAN_CS_OFF;
+}

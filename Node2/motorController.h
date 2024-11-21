@@ -1,16 +1,17 @@
-/**
+/*
  * @file motorController.h
- * @brief Motor position control via PID
  */
 
 
 #ifndef MOTORCONTROLLER_H
 #define MOTORCONTROLLER_H
 
-/**
- * @brief Run the motor controller via PID control
- * @return The current value of the integral term
- */
-float motorController_run(int8_t input, float integral);
+typedef struct{
+	float integral;
+	float prev_e;
+	uint64_t prev_t;	
+}PID_controller;
+
+PID_controller motorController_run(int8_t input, PID_controller);
 
 #endif /* MOTORCONTROLLER_H */

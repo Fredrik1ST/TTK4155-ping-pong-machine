@@ -29,6 +29,11 @@ int main(void) {
 	encoder_init();
 	solenoid_init();
 	pwm_init();
+	
+	PID_controller PID;
+	PID.integral = 0;
+	PID.prev_e = 0;
+	PID.prev_t = time_now();
 
     while (1) {
 		
@@ -40,7 +45,7 @@ int main(void) {
 		msgOut.length = 0x1;
 		msgOut.dword[0] = getIR();
 		can_tx(msgOut);
-		printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %02X\r\n\r\n", msgOut.id, msgOut.length, msgOut.dword[0]);
+		printf("Sent: ID: %02X    -    Len: %02X    -    Dat: %04X\r\n\r\n", msgOut.id, msgOut.length, msgOut.dword[0]);
 		
 		CanMsg msgIn;
 		if(CAN0->CAN_MB[rxMailbox].CAN_MSR & CAN_MSR_MRDY){
@@ -62,7 +67,7 @@ int main(void) {
 				pwm_setDutyCycle_servo(1500); // Center
 			}
 		
-			integral = motorController_run(gp_pos_x, integral);
+			PID = motorController_run(gp_pos_x, PID);
 		
 			if (gp_btn == 0){
 				solenoid_kick();
