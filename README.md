@@ -228,10 +228,8 @@ void spi_init(void){
 #### Software notes
 - In Microchip Studio, files for ATSAM3X8E need to be downloaded from Tools > Device Pack Manager
 	- Even after this, we lacked some necessary files for compiling in "C:\Program Files (x86)\Atmel\Studio\7.0\toolchain" that we ended up copying from the lab PCs.
-- For CAN bit timing: set the phase segments equal in node 1 and 2, and find a BRP (baud rate prescaling) value that makes the Time Quanta (TQ) as equal as possible.
-	- Node 1 TQ = F_OSC / BRP = 16MHz / 4*2 = 5ns
-	- Node 2 TQ = MCK / BRP = 42Mhz / 20 = 5ns
-	- Set time segments (SJW, PropSeg, PS1, PS2) equal on all nodes to get the same bit time. SJW can be left alone (defaults to 1).
+- For CAN bit timing: the important thing is to make the CAN nominal bit time match on both nodes. See the spreadsheet for an example.
+	- Set time segments (SJW, PropSeg, PS1, PS2) equal on all nodes. SJW can be left alone (defaults to 1).
 	- NB! Most registers are offset by n+1, so if you want e.g. BRP = 4, write 3 to the register.
 
 
